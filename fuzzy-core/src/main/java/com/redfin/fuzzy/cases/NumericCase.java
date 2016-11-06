@@ -3,6 +3,7 @@ package com.redfin.fuzzy.cases;
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Generator;
+import com.redfin.fuzzy.Literal;
 import com.redfin.fuzzy.Preconditions;
 import com.redfin.fuzzy.Suppliers;
 
@@ -73,13 +74,48 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 
 		private WithinChain(NumericCase<T> baseCase, T range) { this.baseCase = baseCase; this.range = range; }
 
+		public Case<T> butExcludingValueOf(Generator<T> number) {
+			Preconditions.checkNotNull(number);
+			if(range.equals(baseCase.i2t(1))) {
+				return () -> Suppliers.pairwisePermutations(
+					Collections.<Function<Random, T>>singleton(random -> number.get()),
+					Any.of(-1, 1).getSuppliers(),
+					(random, base, distance) -> baseCase.add(base, baseCase.i2t(distance))
+				);
+			}
+			else {
+				return () -> Suppliers.pairwisePermutations(
+					Collections.<Function<Random, T>>singleton(random -> number.get()),
+					Any.of(
+						baseCase.newCase().inRange(baseCase.negate(range), baseCase.i2t(-1)),
+						baseCase.newCase().inRange(baseCase.i2t(1), range)
+					).getSuppliers(),
+					(random, base, distance) -> baseCase.add(base, distance)
+				);
+			}
+		}
+
 		public Case<T> of(Generator<T> number) {
 			Preconditions.checkNotNull(number);
-			return () -> Suppliers.pairwisePermutations(
-				Collections.<Function<Random, T>>singleton(random -> number.get()),
-				baseCase.inRange(baseCase.negate(range), range).getSuppliers(),
-				(random, base, distance) -> baseCase.add(base, distance)
-			);
+
+			if(range.equals(baseCase.i2t(1))) {
+				return () -> Suppliers.pairwisePermutations(
+					Collections.<Function<Random, T>>singleton(random -> number.get()),
+					Any.of(-1, 0, 1).getSuppliers(),
+					(random, base, distance) -> baseCase.add(base, baseCase.i2t(distance))
+				);
+			}
+			else {
+				return () -> Suppliers.pairwisePermutations(
+					Collections.<Function<Random, T>>singleton(random -> number.get()),
+					Any.of(
+						baseCase.newCase().inRange(baseCase.negate(range), baseCase.i2t(-1)),
+						Literal.value(baseCase.i2t(0)),
+						baseCase.newCase().inRange(baseCase.i2t(1), range)
+					).getSuppliers(),
+					(random, base, distance) -> baseCase.add(base, distance)
+				);
+			}
 		}
 	}
 
