@@ -414,6 +414,51 @@ public class NumericCaseTest {
 		Context.cleanUp();
 	}
 
+	@Test
+	public void testWithinRangeOfGenerator() {
+		Context.init(0);
+
+		List<List<Integer>> actual = new ArrayList<>();
+		do {
+			Generator<Integer> base = Generator.of(Any.of(-10, 0, 10));
+			Generator<Integer> withinRange = Generator.of(Any.integer().within(100).of(base));
+
+			actual.add(Arrays.asList(base.get(), withinRange.get()));
+		}
+		while(Context.next());
+
+		actual.sort((a, b) -> (a.get(0).intValue() != b.get(0).intValue()) ? a.get(0) - b.get(0) : a.get(1) - b.get(1));
+
+		List<List<Object>> expected = Arrays.asList(
+			Arrays.asList(-10, -110),
+			Arrays.asList(-10, integerBetween(-109, -11)),
+			Arrays.asList(-10, -10),
+			Arrays.asList(-10, integerBetween(-9, 89)),
+			Arrays.asList(-10, 90),
+
+			Arrays.asList(0, -100),
+			Arrays.asList(0, integerBetween(-99, -1)),
+			Arrays.asList(0, 0),
+			Arrays.asList(0, integerBetween(1, 99)),
+			Arrays.asList(0, 100),
+
+			Arrays.asList(10, -90),
+			Arrays.asList(10, integerBetween(-89, 9)),
+			Arrays.asList(10, 10),
+			Arrays.asList(10, integerBetween(11, 109)),
+			Arrays.asList(10, 110)
+		);
+
+		assertEquals(expected, actual);
+
+		Context.cleanUp();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testWithinRangeOfGeneratorWithZeroRange() {
+		Any.integer().within(0);
+	}
+
 	private SupplierExpectations assertSuppliers(Set<Function<Random, Integer>> suppliers) {
 		SupplierExpectations res = new SupplierExpectations();
 

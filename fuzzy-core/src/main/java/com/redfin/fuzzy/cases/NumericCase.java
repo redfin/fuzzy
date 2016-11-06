@@ -59,6 +59,30 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		);
 	}
 
+	public WithinChain<T> within(T range) {
+		Preconditions.checkNotNull(range);
+		if(lt(range, i2t(1)))
+			throw new IllegalArgumentException();
+
+		return new WithinChain<T>(newCase(), range);
+	}
+
+	public static class WithinChain<T extends Number> {
+		private final NumericCase<T> baseCase;
+		private final T range;
+
+		private WithinChain(NumericCase<T> baseCase, T range) { this.baseCase = baseCase; this.range = range; }
+
+		public Case<T> of(Generator<T> number) {
+			Preconditions.checkNotNull(number);
+			return () -> Suppliers.pairwisePermutations(
+				Collections.<Function<Random, T>>singleton(random -> number.get()),
+				baseCase.inRange(baseCase.negate(range), range).getSuppliers(),
+				(random, base, distance) -> baseCase.add(base, distance)
+			);
+		}
+	}
+
 	@Override
 	public Set<Function<Random, T>> getSuppliers() {
 		Set<Function<Random, T>> suppliers = new HashSet<>(3);
