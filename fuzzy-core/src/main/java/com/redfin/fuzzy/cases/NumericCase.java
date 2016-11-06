@@ -1,7 +1,12 @@
 package com.redfin.fuzzy.cases;
 
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.Generator;
+import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.Suppliers;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -34,6 +39,24 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		min = minInclusive;
 		max = null;
 		return this;
+	}
+
+	public Case<T> greaterThan(Generator<T> minExclusive) {
+		Preconditions.checkNotNull(minExclusive);
+		return () -> Suppliers.pairwisePermutations(
+			Collections.<Function<Random, T>>singleton(random -> minExclusive.get()),
+			newCase().greaterThan(i2t(1)).getSuppliers(),
+			(random, base, distance) -> add(base, distance)
+		);
+	}
+
+	public Case<T> lessThan(Generator<T> maxExclusive) {
+		Preconditions.checkNotNull(maxExclusive);
+		return () -> Suppliers.pairwisePermutations(
+			Collections.<Function<Random, T>>singleton(random -> maxExclusive.get()),
+			newCase().greaterThan(i2t(1)).getSuppliers(),
+			(random, base, distance) -> add(base, negate(distance))
+		);
 	}
 
 	@Override
@@ -71,19 +94,29 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			suppliers.add(r -> zero);
 		}
 
+		// Cover the specific boundaries
+		if(min != null && !min.equals(zero)) suppliers.add(r -> min);
+		if(max != null && !max.equals(zero)) suppliers.add(r -> max);
+
 		return suppliers;
 	}
 
-	/*package*/ abstract T negate(T t);
-	/*package*/ abstract T abs(T t);
-	/*package*/ abstract T i2t(int i);
-	/*package*/ abstract boolean lt(T a, T b);
+	protected abstract NumericCase<T> newCase();
 
-	/*package*/ abstract T rng(Random random);
-	/*package*/ abstract T rngLessThan(Random random, T maxInclusive);
+	protected abstract T add(T a, T b);
+	protected abstract T negate(T t);
+	protected abstract T abs(T t);
+	protected abstract T i2t(int i);
+	protected abstract boolean lt(T a, T b);
+
+	protected abstract T rng(Random random);
+	protected abstract T rngLessThan(Random random, T maxInclusive);
 
 	public static NumericCase<Byte> ofBytes() {
 		return new NumericCase<Byte>() {
+			@Override protected NumericCase<Byte> newCase() { return Any.byteInteger(); }
+
+			@Override protected Byte add(Byte a, Byte b) { return (byte)(a + b); }
 			@Override protected Byte negate(Byte b) { return (byte) -b; }
 			@Override protected Byte abs(Byte b) { return (byte) (b < 0 ? -b : b); }
 			@Override protected Byte i2t(int i) { return (byte)i; }
@@ -100,6 +133,9 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 
 	public static NumericCase<Short> ofShorts() {
 		return new NumericCase<Short>() {
+			@Override protected NumericCase<Short> newCase() { return Any.shortInteger(); }
+
+			@Override protected Short add(Short a, Short b) { return (short)(a + b); }
 			@Override protected Short negate(Short s) { return (short) -s; }
 			@Override protected Short abs(Short s) { return (short) (s < 0 ? -s : s); }
 			@Override protected Short i2t(int i) { return (short)i; }
@@ -121,6 +157,9 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 
 	public static NumericCase<Integer> ofIntegers() {
 		return new NumericCase<Integer>() {
+			@Override protected NumericCase<Integer> newCase() { return Any.integer(); }
+
+			@Override protected Integer add(Integer a, Integer b) { return a + b; }
 			@Override protected Integer negate(Integer integer) { return -integer; }
 			@Override protected Integer abs(Integer integer) { int i = integer; return i < 0 ? -i : i; }
 			@Override protected Integer i2t(int i) { return i; }
@@ -136,6 +175,9 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 
 	public static NumericCase<Long> ofLongs() {
 		return new NumericCase<Long>() {
+			@Override protected NumericCase<Long> newCase() { return Any.longInteger(); }
+
+			@Override protected Long add(Long a, Long b) { return a + b; }
 			@Override protected Long negate(Long lng) { return -lng; }
 			@Override protected Long abs(Long lng) { long l = lng; return l < 0 ? -l : l; }
 			@Override protected Long i2t(int i) { return (long) i; }

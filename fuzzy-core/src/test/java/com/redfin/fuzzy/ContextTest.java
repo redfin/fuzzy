@@ -1,15 +1,20 @@
 package com.redfin.fuzzy;
 
+import org.junit.After;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-
-import java.util.HashSet;
-import java.util.Set;
-import org.junit.After;
-import org.junit.Test;
 
 public class ContextTest {
 
@@ -20,9 +25,9 @@ public class ContextTest {
 
 	@Test
 	public void testInitReinitialized() {
-		Context.init();
+		Context.init(0);
 		try {
-			Context.init();
+			Context.init(0);
 			fail();
 		}
 		catch(IllegalStateException e) {
@@ -37,7 +42,7 @@ public class ContextTest {
 
 	@Test
 	public void testGetUnlockedLocked() {
-		Context.init();
+		Context.init(0);
 		Context.getUnlocked().lock();
 
 		try {
@@ -51,23 +56,23 @@ public class ContextTest {
 
 	@Test
 	public void testInitGetUnlocked() {
-		Context.init();
+		Context.init(0);
 		assertNotNull(Context.getUnlocked());
 	}
 
 	@Test
 	public void testCleanUp() {
-		Context.init();
+		Context.init(0);
 		assertNotNull(Context.getUnlocked());
 		Context.cleanUp();
-		Context.init();
+		Context.init(0);
 		assertNotNull(Context.getUnlocked());
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testRegisterLocked() {
-		Context.init();
+		Context.init(0);
 		Context c = Context.getUnlocked();
 
 		c.lock();
@@ -84,7 +89,7 @@ public class ContextTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testRegisterDuplicate() {
-		Context.init();
+		Context.init(0);
 		Context c = Context.getUnlocked();
 
 		Generator g = new Generator(c);
@@ -101,7 +106,7 @@ public class ContextTest {
 
 	@Test
 	public void testBasicIntegration() {
-		Context.init();
+		Context.init(0);
 
 		Set<String> actuals = new HashSet<>();
 		do {
@@ -114,7 +119,7 @@ public class ContextTest {
 
 	@Test
 	public void testMultiVariableIntegration() {
-		Context.init();
+		Context.init(0);
 
 		Set<String> actuals = new HashSet<>();
 		do {
@@ -137,13 +142,13 @@ public class ContextTest {
 
 	@Test
 	public void testNextWithNoGenerators() {
-		Context.init();
+		Context.init(0);
 		assertFalse(Context.next());
 	}
 
 	@Test
 	public void testReport() {
-		Context.init();
+		Context.init(0);
 
 		Generator<String> variableA = Generator.named("variableA").of(Literal.value("Hello, "));
 		Generator<String> variableB = Generator.named("variableB").of(Literal.value("World!"));
@@ -166,13 +171,13 @@ public class ContextTest {
 
 	@Test
 	public void testReportUnlocked() {
-		Context.init();
+		Context.init(0);
 		assertEquals("", Context.report());
 	}
 
 	@Test
 	public void testReportFullyIterated() {
-		Context.init();
+		Context.init(0);
 
 		Generator.of(Literal.value("A")).get();
 		Context.next();
@@ -180,14 +185,57 @@ public class ContextTest {
 		assertEquals("", Context.report());
 	}
 
-	public void blan() {
+	@Test
+	public void testRandomDeterminism() {
+		Context.init(0);
 
+		List<Integer> firstValues = new ArrayList<>();
+		do {
+			Generator<Integer> r = Generator.of(Random::nextInt, Random::nextInt, Random::nextInt);
+			firstValues.add(r.get());
+		}
+		while(Context.next());
 
-		Generator<String> myString = Generator.of(Any.string()
-			.withOnlyHexChars()
-			.withLengthOf(Any.of(0, 10, 20))
-		);
+		assertEquals(3, firstValues.size());
 
+		Context.cleanUp();
+		Context.init(0);
+
+		List<Integer> secondValues = new ArrayList<>();
+		do {
+			Generator<Integer> r = Generator.of(Random::nextInt, Random::nextInt, Random::nextInt);
+			secondValues.add(r.get());
+		}
+		while(Context.next());
+
+		assertEquals(firstValues, secondValues);
+	}
+
+	@Test
+	public void testRandomDeterminismWithNewSeed() {
+		Context.init(0);
+
+		List<Integer> firstValues = new ArrayList<>();
+		do {
+			Generator<Integer> r = Generator.of(Random::nextInt, Random::nextInt, Random::nextInt);
+			firstValues.add(r.get());
+		}
+		while(Context.next());
+
+		assertEquals(3, firstValues.size());
+
+		Context.cleanUp();
+		Context.init(1); // different seed this time
+
+		List<Integer> secondValues = new ArrayList<>();
+		do {
+			Generator<Integer> r = Generator.of(Random::nextInt, Random::nextInt, Random::nextInt);
+			secondValues.add(r.get());
+		}
+		while(Context.next());
+
+		assertEquals(3, secondValues.size());
+		assertNotEquals(firstValues, secondValues);
 	}
 
 }

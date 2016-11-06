@@ -1,19 +1,26 @@
 package com.redfin.fuzzy.cases;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.Context;
+import com.redfin.fuzzy.Generator;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.junit.Before;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class NumericCaseTest {
 
@@ -44,11 +51,12 @@ public class NumericCaseTest {
 		Case<Integer> subject = Any.integer().lessThan(10);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
-		assertEquals(3, suppliers.size());
+		assertEquals(4, suppliers.size());
 		assertSuppliers(suppliers)
 			.expectNegative()
 			.expectPositive()
 			.expectZero()
+			.expectSpecific(10)
 			.expectOfPositive(i -> i <= 10)
 		;
 	}
@@ -71,11 +79,12 @@ public class NumericCaseTest {
 		Case<Integer> subject = Any.integer().lessThan(-1000000000);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
-		assertEquals(1, suppliers.size());
+		assertEquals(2, suppliers.size());
 		assertSuppliers(suppliers)
 			.expectNegative()
 			.expectNoZero()
 			.expectNoPositive()
+			.expectSpecific(-1000000000)
 			.expectOfNegative(i -> i <= -1000000000)
 		;
 	}
@@ -85,11 +94,12 @@ public class NumericCaseTest {
 		Case<Integer> subject = Any.integer().greaterThan(1000000000);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
-		assertEquals(1, suppliers.size());
+		assertEquals(2, suppliers.size());
 		assertSuppliers(suppliers)
 			.expectNoNegative()
 			.expectNoZero()
 			.expectPositive()
+			.expectSpecific(1000000000)
 			.expectOfPositive(i -> i >= 1000000000)
 		;
 	}
@@ -112,11 +122,12 @@ public class NumericCaseTest {
 		Case<Integer> subject = Any.integer().greaterThan(-10);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
-		assertEquals(3, suppliers.size());
+		assertEquals(4, suppliers.size());
 		assertSuppliers(suppliers)
 			.expectNegative()
 			.expectZero()
 			.expectPositive()
+			.expectSpecific(-10)
 			.expectOfNegative(i -> i >= -10)
 		;
 	}
@@ -126,14 +137,31 @@ public class NumericCaseTest {
 		Case<Integer> subject = Any.integer().inRange(-10, 10);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
-		assertEquals(3, suppliers.size());
+		assertEquals(5, suppliers.size());
 		assertSuppliers(suppliers)
 			.expectNegative()
 			.expectZero()
 			.expectPositive()
+			.expectSpecific(-10)
+			.expectSpecific(10)
 			.expectOfNegative(i -> i >= -10)
 			.expectOfPositive(i -> i <= 10)
 		;
+	}
+
+	@Test
+	public void testByteNewCase() {
+		NumericCase<Byte> subject = Any.byteInteger();
+		NumericCase<Byte> newCase = subject.newCase();
+
+		assertNotSame(subject, newCase);
+		assertNotNull(newCase);
+	}
+
+	@Test
+	public void testByteAdd() {
+		NumericCase<Byte> subject = Any.byteInteger();
+		assertEquals((byte)5, subject.add((byte)3, (byte)2).byteValue());
 	}
 
 	@Test
@@ -176,6 +204,21 @@ public class NumericCaseTest {
 	}
 
 	@Test
+	public void testShortNewCase() {
+		NumericCase<Short> subject = Any.shortInteger();
+		NumericCase<Short> newCase = subject.newCase();
+
+		assertNotSame(subject, newCase);
+		assertNotNull(newCase);
+	}
+
+	@Test
+	public void testShortAdd() {
+		NumericCase<Short> subject = Any.shortInteger();
+		assertEquals((short)5, subject.add((short)3, (short)2).shortValue());
+	}
+
+	@Test
 	public void testShortNegation() {
 		NumericCase<Short> subject = Any.shortInteger();
 		assertEquals(new Short((short)-1234), subject.negate((short)1234));
@@ -212,6 +255,21 @@ public class NumericCaseTest {
 	public void testShortRngLessThan() {
 		NumericCase<Short> subject = Any.shortInteger();
 		assertTrue(subject.rngLessThan(random, (short)1234) <= (short)1234);
+	}
+
+	@Test
+	public void testLongNewCase() {
+		NumericCase<Long> subject = Any.longInteger();
+		NumericCase<Long> newCase = subject.newCase();
+
+		assertNotSame(subject, newCase);
+		assertNotNull(newCase);
+	}
+
+	@Test
+	public void testLongAdd() {
+		NumericCase<Long> subject = Any.longInteger();
+		assertEquals(5L, subject.add(3L, 2L).longValue());
 	}
 
 	@Test
@@ -259,18 +317,77 @@ public class NumericCaseTest {
 		assertTrue(subject.rngLessThan(random, 0x7FFFFFFFL) <= 0x7FFFFFFFL);
 	}
 
+	@Test
+	public void testGreaterThanGenerator() {
+		Context.init(0);
+
+		List<List<Integer>> actual = new ArrayList<>();
+		do {
+			Generator<Integer> base = Generator.of(Any.of(-10, 0, 10));
+			Generator<Integer> greater = Generator.of(Any.integer().greaterThan(base));
+
+			actual.add(Arrays.asList(base.get(), greater.get()));
+		}
+		while(Context.next());
+
+		actual.sort((a, b) -> (a.get(0).intValue() != b.get(0).intValue()) ? a.get(0) - b.get(0) : a.get(1) - b.get(1));
+
+		List<List<Object>> expected = Arrays.asList(
+			Arrays.asList(-10, -9),
+			Arrays.asList(-10, integerGreaterThan(-10)),
+			Arrays.asList(0, 1),
+			Arrays.asList(0, integerGreaterThan(0)),
+			Arrays.asList(10, 11),
+			Arrays.asList(10, integerGreaterThan(10))
+		);
+
+		assertEquals(expected, actual);
+
+		Context.cleanUp();
+	}
+
+	@Test
+	public void testLessThanGenerator() {
+		Context.init(0);
+
+		List<List<Integer>> actual = new ArrayList<>();
+		do {
+			Generator<Integer> base = Generator.of(Any.of(-10, 0, 10));
+			Generator<Integer> lesser = Generator.of(Any.integer().lessThan(base));
+
+			actual.add(Arrays.asList(base.get(), lesser.get()));
+		}
+		while(Context.next());
+
+		actual.sort((a, b) -> (a.get(0).intValue() != b.get(0).intValue()) ? a.get(0) - b.get(0) : a.get(1) - b.get(1));
+
+		List<List<Object>> expected = Arrays.asList(
+			Arrays.asList(-10, integerLessThan(-10)),
+			Arrays.asList(-10, -11),
+			Arrays.asList(0, integerLessThan(0)),
+			Arrays.asList(0, -1),
+			Arrays.asList(10, integerLessThan(10)),
+			Arrays.asList(10, 9)
+		);
+
+		assertEquals(expected, actual);
+
+		Context.cleanUp();
+	}
+
 	private SupplierExpectations assertSuppliers(Set<Function<Random, Integer>> suppliers) {
 		SupplierExpectations res = new SupplierExpectations();
 
 		for(Function<Random, Integer> supplier : suppliers) {
 			int i = supplier.apply(random);
+
 			if(i < 0) {
-				assertNull("Expected at most one negative value", res.negative);
-				res.negative = i;
+				assertNull("Expected at most two negative values", res.negative2);
+				if(res.negative == null) res.negative = i; else res.negative2 = i;
 			}
 			else if(i > 0) {
-				assertNull("Expected at most one positive value", res.positive);
-				res.positive = i;
+				assertNull("Expected at most two positive values", res.positive2);
+				if(res.positive == null) res.positive = i; else res.positive2 = i;
 			}
 			else {
 				assertNull("Expected at most one zero value", res.zero);
@@ -282,9 +399,19 @@ public class NumericCaseTest {
 	}
 
 	private static class SupplierExpectations {
-		Integer negative;
-		Integer positive;
+		Integer negative, negative2;
+		Integer positive, positive2;
 		Integer zero;
+
+		SupplierExpectations expectSpecific(int expected) {
+			assertTrue(
+				(negative != null && negative == expected) ||
+				(negative2 != null && negative2 == expected) ||
+				(positive != null && positive == expected) ||
+				(positive2 != null && positive2 == expected)
+			);
+			return this;
+		}
 
 		SupplierExpectations expectNegative() {
 			assertNotNull("Expected a negative value.", negative);
@@ -318,14 +445,32 @@ public class NumericCaseTest {
 
 		SupplierExpectations expectOfNegative(Predicate<Integer> predicate) {
 			assertTrue("Expected negative {" + negative + "} to match predicate", predicate.test(negative));
+			assertTrue("Expected negative {" + negative2 + "} to match predicate", predicate.test(negative2));
 			return this;
 		}
 
 		SupplierExpectations expectOfPositive(Predicate<Integer> predicate) {
 			assertTrue("Expected positive {" + positive + "} to match predicate", predicate.test(positive));
+			assertTrue("Expected positive {" + positive2 + "} to match predicate", predicate.test(positive2));
 			return this;
 		}
 
+	}
+
+	private static Object integerGreaterThan(int i) {
+		return new Object() {
+			@Override public boolean equals(Object obj) { return obj instanceof Integer && (int)obj > i; }
+			@Override public int hashCode() { return i; }
+			@Override public String toString() { return "> " + i; }
+		};
+	}
+
+	private static Object integerLessThan(int i) {
+		return new Object() {
+			@Override public boolean equals(Object obj) { return obj instanceof Integer && (int)obj < i; }
+			@Override public int hashCode() { return i; }
+			@Override public String toString() { return "< " + i; }
+		};
 	}
 
 }

@@ -27,11 +27,13 @@ public class Context {
 		}
 	}
 
-	public static void init() {
+	public static void init(long randomSeed) {
 		if(CONTEXT.get() != null)
 			throw new IllegalStateException("TODO: error message reinitialized");
 
 		Context c = new Context();
+		c.random.setSeed(randomSeed);
+
 		CONTEXT.set(c);
 	}
 

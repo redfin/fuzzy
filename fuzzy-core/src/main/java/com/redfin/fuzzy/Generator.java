@@ -3,6 +3,8 @@ package com.redfin.fuzzy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
 
 public class Generator<T> implements Comparable<Generator<T>> {
 
@@ -35,9 +37,10 @@ public class Generator<T> implements Comparable<Generator<T>> {
 	public static <X> Generator<X> of(X... literals) { return new GeneratorBuilder().of(literals); }
 
 	@SafeVarargs
-	public static <X> Generator<X> ofCases(Case<X>... cases) {
-		return new GeneratorBuilder().of(cases);
-	}
+	public static <X> Generator<X> ofCases(Case<X>... cases) { return new GeneratorBuilder().of(cases); }
+
+	@SafeVarargs
+	public static <X> Generator<X> of(Function<Random, X>... suppliers) { return new GeneratorBuilder().of(suppliers); }
 
 	@Override
 	public final int hashCode() {
@@ -91,6 +94,12 @@ public class Generator<T> implements Comparable<Generator<T>> {
 
 		@SafeVarargs
 		public final <X> Generator<X> of(X... literals) { return this.of(Any.of(literals)); }
+
+		@SafeVarargs
+		public final <X> Generator<X> of(Function<Random, X>... suppliers) {
+			Preconditions.checkNotNullAndContainsNoNulls(suppliers);
+			return this.of(() -> Util.setOf(suppliers));
+		}
 	}
 
 }

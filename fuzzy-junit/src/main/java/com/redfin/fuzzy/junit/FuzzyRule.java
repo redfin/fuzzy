@@ -48,7 +48,10 @@ public class FuzzyRule implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			Context.init();
+			// Base the randomization seed on the test name so that it runs deterministically but with different
+			// values for each test.
+			Context.init(description.getDisplayName().hashCode());
+
 			parent.testReporter.preTest(description);
 
 			boolean overallSuccess = false;
