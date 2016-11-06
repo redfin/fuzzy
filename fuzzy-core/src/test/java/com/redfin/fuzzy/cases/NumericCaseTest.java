@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -147,6 +148,44 @@ public class NumericCaseTest {
 			.expectOfNegative(i -> i >= -10)
 			.expectOfPositive(i -> i <= 10)
 		;
+	}
+
+	@Test
+	public void testInRangeFullyPositive() {
+		Case<Integer> subject = Any.integer().inRange(1000, 1010);
+		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+
+		List<Integer> actual = suppliers.stream()
+			.map(s -> s.apply(random))
+			.sorted()
+			.collect(Collectors.toList());
+
+		List<Object> expected = Arrays.asList(
+			1000,
+			integerBetween(1000, 1010),
+			1010
+		);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testInRangeFullyNegative() {
+		Case<Integer> subject = Any.integer().inRange(-1010, -1000);
+		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+
+		List<Integer> actual = suppliers.stream()
+			.map(s -> s.apply(random))
+			.sorted()
+			.collect(Collectors.toList());
+
+		List<Object> expected = Arrays.asList(
+			-1010,
+			integerBetween(-1010, -1000),
+			-1000
+		);
+
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -470,6 +509,14 @@ public class NumericCaseTest {
 			@Override public boolean equals(Object obj) { return obj instanceof Integer && (int)obj < i; }
 			@Override public int hashCode() { return i; }
 			@Override public String toString() { return "< " + i; }
+		};
+	}
+
+	private static Object integerBetween(int low, int high) {
+		return new Object() {
+			@Override public boolean equals(Object obj) { return obj instanceof Integer && (int)obj >= low && (int)obj <= high; }
+			@Override public int hashCode() { return low; }
+			@Override public String toString() { return low + " ≤ i ≤ " + high; }
 		};
 	}
 

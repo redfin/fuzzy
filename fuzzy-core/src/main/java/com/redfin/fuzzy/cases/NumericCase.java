@@ -65,7 +65,11 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		final T zero = i2t(0);
 
 		// Negative
-		if(min == null || lt(min, zero)) {
+		if(min != null && max != null && lt(max, zero)) {
+			final T d = add(max, negate(min));
+			suppliers.add(r -> add(min, rngLessThan(r, d)));
+		}
+		else if(min == null || lt(min, zero)) {
 			if(min == null) {
 				suppliers.add(r -> negate(abs(rng(r))));
 			}
@@ -76,7 +80,11 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		}
 
 		// Positive
-		if(max == null || lt(zero, max)) {
+		if(max != null && min != null && lt(zero, min)) {
+			final T d = add(max, negate(min));
+			suppliers.add(r -> add(min, rngLessThan(r, d)));
+		}
+		else if(max == null || lt(zero, max)) {
 			if(max == null) {
 				suppliers.add(r -> abs(rng(r)));
 			}
