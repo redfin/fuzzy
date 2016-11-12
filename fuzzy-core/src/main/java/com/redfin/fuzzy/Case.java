@@ -15,13 +15,15 @@ public interface Case<T>
 
 	default Case<T> or(Case<T> other) { return Any.of(this, other); }
 
+	default Case<T> orNull() { return Any.nullableOf(this); }
+
 	default Case<T> excluding(T value) { return excluding(Collections.singleton(value)); }
 	default Case<T> excluding(T... values) { return excluding(values == null ? null : Arrays.asList(values)); }
 	default Case<T> excluding(Iterable<T> values) { return new ExcludingCase<>(this, values); }
 
-	default T resolveAnyOnce() { return resolveAnyOnce(new Random()); }
+	default T generateAnyOnce() { return generateAnyOnce(new Random()); }
 
-	default T resolveAnyOnce(Random random) {
+	default T generateAnyOnce(Random random) {
 		Preconditions.checkNotNull(random);
 
 		Set<Function<Random, T>> suppliers = getSuppliers();
@@ -32,9 +34,9 @@ public interface Case<T>
 		return suppliers.stream().findAny().orElse(null).apply(random);
 	}
 
-	default Set<T> resolveAllOnce() { return resolveAllOnce(new Random()); }
+	default Set<T> generateAllOnce() { return generateAllOnce(new Random()); }
 
-	default Set<T> resolveAllOnce(Random random) {
+	default Set<T> generateAllOnce(Random random) {
 		Preconditions.checkNotNull(random);
 
 		Set<Function<Random, T>> suppliers = getSuppliers();
