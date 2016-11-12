@@ -12,15 +12,25 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public abstract class NumericCase<T extends Number> implements Case<T> {
+
+	private final int MAX_ATTEMPTS = 100;
 
 	private T min;
 	private T max;
 
+	private final Set<T> excluded = new HashSet<T>();
+
 	public Case<T> inRange(T minInclusive, T maxInclusive) {
 		Preconditions.checkNotNull(minInclusive);
 		Preconditions.checkNotNull(maxInclusive);
+
+		if(lt(maxInclusive, minInclusive) || minInclusive.equals(maxInclusive)) {
+			throw new IllegalArgumentException("minInclusive must be less than maxInclusive.");
+		}
 
 		min = minInclusive;
 		max = maxInclusive;
@@ -39,6 +49,16 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		Preconditions.checkNotNull(minInclusive);
 		min = minInclusive;
 		max = null;
+		return this;
+	}
+
+	@Override
+	public Case<T> excluding(Iterable<T> values) {
+		if(values != null) {
+			for(T t : values) {
+				excluded.add(t);
+			}
+		}
 		return this;
 	}
 
@@ -119,6 +139,16 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		}
 	}
 
+	private Function<Random, T> exclude(Function<Random, T> supplier) {
+		return r -> {
+			for(int i = 0; i < MAX_ATTEMPTS; i++) {
+				T t = supplier.apply(r);
+				if(!excluded.contains(t)) return t;
+			}
+			throw new IllegalStateException("Numeric case could not generate a value that was not marked as excluded.");
+		};
+	}
+
 	@Override
 	public Set<Function<Random, T>> getSuppliers() {
 		Set<Function<Random, T>> suppliers = new HashSet<>(3);
@@ -157,16 +187,17 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		// Zero
 		if(
 			(min == null || lt(min, zero) || zero.equals(min)) &&
-			(max == null || lt(zero, max) || zero.equals(max))
+			(max == null || lt(zero, max) || zero.equals(max)) &&
+			!excluded.contains(zero)
 		) {
 			suppliers.add(r -> zero);
 		}
 
 		// Cover the specific boundaries
-		if(min != null && !min.equals(zero)) suppliers.add(r -> min);
-		if(max != null && !max.equals(zero)) suppliers.add(r -> max);
+		if(min != null && !min.equals(zero) && !excluded.contains(min)) suppliers.add(r -> min);
+		if(max != null && !max.equals(zero) && !excluded.contains(max)) suppliers.add(r -> max);
 
-		return suppliers;
+		return suppliers.stream().map(this::exclude).collect(Collectors.toSet());
 	}
 
 	protected abstract NumericCase<T> newCase();

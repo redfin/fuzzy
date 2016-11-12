@@ -2,6 +2,7 @@ package com.redfin.fuzzy;
 
 import com.redfin.fuzzy.pairwise.Pairwise;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -9,6 +10,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Suppliers {
+
+	public static <INPUT, OUTPUT> Set<Function<Random, OUTPUT>> map(
+		Set<Function<Random, INPUT>> suppliers,
+		Function<Function<Random, INPUT>, Function<Random, OUTPUT>> mapping
+	) {
+		Preconditions.checkNotNull(suppliers);
+		Preconditions.checkNotNull(mapping);
+
+		Set<Function<Random, OUTPUT>> mapped = new HashSet<>(suppliers.size());
+		mapped.addAll(suppliers.stream().map(mapping).collect(Collectors.toList()));
+
+		return mapped;
+	}
 
 	public interface BiPermutedSupplierFunction<T, U, R> {
 		R generate(Random r, T t, U u);

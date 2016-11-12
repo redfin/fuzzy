@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class NumericCaseTest {
 
@@ -562,6 +563,64 @@ public class NumericCaseTest {
 		assertEquals(expected, actual);
 
 		Context.cleanUp();
+	}
+
+	@Test
+	public void testExcludingMinInclusive() {
+		Case<Integer> subject = Any.integer().inRange(5, 10).excluding(5);
+
+		Set<Integer> actual = subject.resolveAllOnce(random);
+
+		assertFalse(actual.contains(5));
+	}
+
+	@Test
+	public void testExcludingMaxInclusive() {
+		Case<Integer> subject = Any.integer().inRange(5, 10).excluding(10);
+
+		Set<Integer> actual = subject.resolveAllOnce(random);
+
+		assertFalse(actual.contains(10));
+	}
+
+	@Test
+	public void testExcludingZero() {
+		Case<Integer> subject = Any.integer().inRange(-5, 5).excluding(0);
+
+		Set<Integer> actual = subject.resolveAllOnce(random);
+
+		assertFalse(actual.contains(0));
+	}
+
+	@Test
+	public void testExcludingNarrowRange() {
+		Case<Integer> subject = Any.integer().inRange(1, 3).excluding(2);
+
+		Set<Integer> actual = subject.resolveAllOnce(random);
+
+		assertFalse(actual.contains(2));
+	}
+
+	@Test
+	public void testExcludingNarrowNegativeRange() {
+		Case<Integer> subject = Any.integer().inRange(-2, 2).excluding(-1);
+
+		Set<Integer> actual = subject.resolveAllOnce(random);
+
+		assertFalse(actual.contains(-1));
+	}
+
+	@Test
+	public void testExcludingMaxAttempts() {
+		Case<Integer> subject = Any.integer().inRange(1, 2).excluding(1, 2);
+
+		try {
+			Set<Integer> actual = subject.resolveAllOnce(random);
+			fail("Expected IllegalStateException");
+		}
+		catch(IllegalStateException e) {
+			// expected
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
