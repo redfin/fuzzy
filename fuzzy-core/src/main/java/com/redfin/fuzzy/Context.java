@@ -17,10 +17,10 @@ public class Context {
 	/*package*/ static Context getUnlocked() {
 		Context c = CONTEXT.get();
 		if(c == null) {
-			return throwUninitialized();
+			throw newUninitializedException();
 		}
 		else if (c.locked) {
-			return c.throwAlreadyLocked();
+			throw c.newAlreadyLockedException();
 		}
 		else {
 			return c;
@@ -40,7 +40,7 @@ public class Context {
 	public static boolean next() {
 		Context c = CONTEXT.get();
 		if(c == null)
-			return throwUninitialized();
+			throw newUninitializedException();
 		if(c.iterations == null || c.iterations.size() == 0)
 			return false;
 		else if(c.iterations.size() > 1) {
@@ -64,7 +64,7 @@ public class Context {
 	public static Map<Generator, Object> valuesForCurrentIteration() {
 		Context c = CONTEXT.get();
 		if(c == null)
-			return throwUninitialized();
+			throw newUninitializedException();
 
 		Map<Generator, Object> res = new HashMap<>();
 		if(c.iterations != null && !c.iterations.isEmpty())
@@ -117,8 +117,7 @@ public class Context {
 		Preconditions.checkNotNullAndContainsNoNulls(cases);
 
 		if(locked) {
-			throwAlreadyLocked();
-			return;
+			throw newAlreadyLockedException();
 		}
 		else if(generators.containsKey(generator)) {
 			throwDuplicateGenerator(generator);
@@ -200,11 +199,11 @@ public class Context {
 		}
 	}
 
-	private static <T> T throwUninitialized() {
-		throw new IllegalStateException("TODO: error message no init");
+	private static IllegalStateException newUninitializedException() {
+		return new IllegalStateException("TODO: error message no init");
 	}
 
-	private <T> T throwAlreadyLocked() {
+	private IllegalStateException newAlreadyLockedException() {
 		StringBuilder message = new StringBuilder();
 		message.append("Cannot modify a test context that has already been locked.\n\n");
 		message.append("The most likely cause of this error is that you attempted to declare a new Generator ");
@@ -220,7 +219,7 @@ public class Context {
 			message.append("\n");
 		}
 
-		throw new IllegalStateException(message.toString());
+		return new IllegalStateException(message.toString());
 	}
 
 	private void throwDuplicateGenerator(Generator g) {

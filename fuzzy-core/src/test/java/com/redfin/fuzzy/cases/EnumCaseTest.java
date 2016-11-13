@@ -59,7 +59,7 @@ public class EnumCaseTest {
 		Any
 			.enumValueFrom(TestEnum.class)
 			.excluding(TestEnum.A, TestEnum.B, TestEnum.C, TestEnum.D)
-			.resolveAllOnce();
+			.generateAllOnce();
 	}
 
 	private enum TestEnum { A, B, C, D }

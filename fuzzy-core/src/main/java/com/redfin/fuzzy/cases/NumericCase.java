@@ -12,12 +12,11 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public abstract class NumericCase<T extends Number> implements Case<T> {
 
-	private final int MAX_ATTEMPTS = 100;
+	private static final int MAX_ATTEMPTS = 100;
 
 	private T min;
 	private T max;
@@ -38,14 +37,14 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		return this;
 	}
 
-	public Case<T> lessThan(T maxInclusive) {
+	public Case<T> lessThanOrEqualTo(T maxInclusive) {
 		Preconditions.checkNotNull(maxInclusive);
 		min = null;
 		max = maxInclusive;
 		return this;
 	}
 
-	public Case<T> greaterThan(T minInclusive) {
+	public Case<T> greaterThanOrEqualTo(T minInclusive) {
 		Preconditions.checkNotNull(minInclusive);
 		min = minInclusive;
 		max = null;
@@ -62,20 +61,20 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		return this;
 	}
 
-	public Case<T> greaterThan(Generator<T> minExclusive) {
-		Preconditions.checkNotNull(minExclusive);
+	public Case<T> greaterThanOrEqualTo(Generator<T> minInclusive) {
+		Preconditions.checkNotNull(minInclusive);
 		return () -> Suppliers.pairwisePermutations(
-			Collections.<Function<Random, T>>singleton(random -> minExclusive.get()),
-			newCase().greaterThan(i2t(1)).getSuppliers(),
+			Collections.<Function<Random, T>>singleton(random -> minInclusive.get()),
+			newCase().greaterThanOrEqualTo(i2t(1)).getSuppliers(),
 			(random, base, distance) -> add(base, distance)
 		);
 	}
 
-	public Case<T> lessThan(Generator<T> maxExclusive) {
-		Preconditions.checkNotNull(maxExclusive);
+	public Case<T> lessThanOrEqualTo(Generator<T> maxInclusive) {
+		Preconditions.checkNotNull(maxInclusive);
 		return () -> Suppliers.pairwisePermutations(
-			Collections.<Function<Random, T>>singleton(random -> maxExclusive.get()),
-			newCase().greaterThan(i2t(1)).getSuppliers(),
+			Collections.<Function<Random, T>>singleton(random -> maxInclusive.get()),
+			newCase().greaterThanOrEqualTo(i2t(1)).getSuppliers(),
 			(random, base, distance) -> add(base, negate(distance))
 		);
 	}
@@ -224,7 +223,11 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			@Override protected Byte abs(Byte b) { return (byte) (b < 0 ? -b : b); }
 			@Override protected Byte i2t(int i) { return (byte)i; }
 			@Override protected boolean lt(Byte a, Byte b) { return a < b; }
-			@Override protected Byte rng(Random random) { byte[] b = new byte[1]; random.nextBytes(b); return b[0]; }
+			@Override protected Byte rng(Random random) {
+				byte[] b = new byte[1];
+				random.nextBytes(b);
+				return b[0] == 0 ? (byte)1 : b[0];
+			}
 
 			@Override
 			protected Byte rngLessThan(Random random, Byte maxInclusive) {
@@ -251,7 +254,8 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			@Override
 			protected Short rng(Random random) {
 				byte[] b = new byte[2]; random.nextBytes(b);
-				return (short)((int)b[0] << 8 & (int)b[1]);
+				short s = (short)(b[0] << 8 & b[1]);
+				return s == 0 ? (short)1 : s;
 			}
 
 			@Override
@@ -275,7 +279,10 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			@Override protected Integer abs(Integer integer) { int i = integer; return i < 0 ? -i : i; }
 			@Override protected Integer i2t(int i) { return i; }
 			@Override protected boolean lt(Integer a, Integer b) { return a < b; }
-			@Override protected Integer rng(Random random) { return random.nextInt(); }
+			@Override protected Integer rng(Random random) {
+				int i = random.nextInt();
+				return i == 0 ? 1 : i;
+			}
 
 			@Override
 			protected Integer rngLessThan(Random random, Integer maxInclusive) {
@@ -295,7 +302,10 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			@Override protected Long abs(Long lng) { long l = lng; return l < 0 ? -l : l; }
 			@Override protected Long i2t(int i) { return (long) i; }
 			@Override protected boolean lt(Long a, Long b) { return a < b; }
-			@Override protected Long rng(Random random) { return random.nextLong(); }
+			@Override protected Long rng(Random random) {
+				long l = random.nextLong();
+				return l == 0 ? 1L : l;
+			}
 
 			@Override
 			protected Long rngLessThan(Random random, Long maxInclusive) {

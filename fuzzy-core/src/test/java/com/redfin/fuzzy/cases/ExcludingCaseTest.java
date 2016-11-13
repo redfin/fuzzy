@@ -1,13 +1,15 @@
 package com.redfin.fuzzy.cases;
 
-import static org.junit.Assert.*;
-
 import com.redfin.fuzzy.Any;
+import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Literal;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ExcludingCaseTest {
 
@@ -16,10 +18,7 @@ public class ExcludingCaseTest {
 		AtomicInteger i = new AtomicInteger(0);
 		ExcludingCase<Integer> subject = new ExcludingCase<>(Any.of(i::incrementAndGet), 0, 1);
 
-		Set<Integer> expected = new HashSet<>();
-		expected.add(2);
-
-		assertEquals(expected, subject.resolveAllOnce());
+		assertEquals(Collections.singleton(2), subject.generateAllOnce());
 	}
 
 	@Test
@@ -27,12 +26,20 @@ public class ExcludingCaseTest {
 		ExcludingCase<Integer> subject = new ExcludingCase<>(Literal.value(5), 5);
 
 		try {
-			subject.resolveAllOnce();
+			subject.generateAllOnce();
 			fail("Expected IllegalStateException");
 		}
 		catch(IllegalStateException e) {
 			// expected
 		}
+	}
+
+	@Test
+	public void testExcludingLocalImplementation() {
+		AtomicInteger i = new AtomicInteger(0);
+		Case<Integer> subject = new ExcludingCase<>(Any.of(i::incrementAndGet), 0, 1).excluding(2);
+
+		assertEquals(Collections.singleton(3), subject.generateAllOnce());
 	}
 
 }

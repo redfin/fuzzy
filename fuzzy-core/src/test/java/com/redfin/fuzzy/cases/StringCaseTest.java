@@ -1,20 +1,22 @@
 package com.redfin.fuzzy.cases;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Literal;
 import com.redfin.fuzzy.Util;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StringCaseTest {
 
@@ -223,6 +225,12 @@ public class StringCaseTest {
 			.withLength(5);
 
 		assertAllSuppliers(subject.getSuppliers(), "XXXXX"::equals);
+	}
+
+	@Test
+	public void testNonEmpty() {
+		Set<String> generated = Any.string().nonEmpty().generateAllOnce(random);
+		assertFalse(generated.contains(""));
 	}
 
 	private static boolean allCharsAreFrom(String str, Set<String> chars) {

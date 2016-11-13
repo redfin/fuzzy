@@ -21,7 +21,7 @@ public class NullableCaseTest {
 
 	@Test
 	public void testGetSuppliers() {
-		Case<Integer> subject = Any.nullableOf(Any.integer().greaterThan(0));
+		Case<Integer> subject = Any.nullableOf(Any.integer().greaterThanOrEqualTo(0));
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(3, suppliers.size());

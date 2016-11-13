@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -35,6 +36,16 @@ public class NumericCaseTest {
 		random = new Random(123456); // keep tests consistent
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testInRangeZeroWidth() {
+		Any.integer().inRange(5, 5);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testInRangeMaxBeforeMin() {
+		Any.integer().inRange(5, -5);
+	}
+
 	@Test
 	public void testDefaultConfig() {
 		Case<Integer> subject = Any.integer();
@@ -50,7 +61,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testLessThanPositive() {
-		Case<Integer> subject = Any.integer().lessThan(10);
+		Case<Integer> subject = Any.integer().lessThanOrEqualTo(10);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(4, suppliers.size());
@@ -65,7 +76,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testLessThanZero() {
-		Case<Integer> subject = Any.integer().lessThan(0);
+		Case<Integer> subject = Any.integer().lessThanOrEqualTo(0);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(2, suppliers.size());
@@ -78,7 +89,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testLessThanNegative() {
-		Case<Integer> subject = Any.integer().lessThan(-1000000000);
+		Case<Integer> subject = Any.integer().lessThanOrEqualTo(-1000000000);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(2, suppliers.size());
@@ -93,7 +104,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testGreaterThanPositive() {
-		Case<Integer> subject = Any.integer().greaterThan(1000000000);
+		Case<Integer> subject = Any.integer().greaterThanOrEqualTo(1000000000);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(2, suppliers.size());
@@ -108,7 +119,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testGreaterThanZero() {
-		Case<Integer> subject = Any.integer().greaterThan(0);
+		Case<Integer> subject = Any.integer().greaterThanOrEqualTo(0);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(2, suppliers.size());
@@ -121,7 +132,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testGreaterThanNegative() {
-		Case<Integer> subject = Any.integer().greaterThan(-10);
+		Case<Integer> subject = Any.integer().greaterThanOrEqualTo(-10);
 		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
 
 		assertEquals(4, suppliers.size());
@@ -364,7 +375,7 @@ public class NumericCaseTest {
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
 			Generator<Integer> base = Generator.of(Any.of(-10, 0, 10));
-			Generator<Integer> greater = Generator.of(Any.integer().greaterThan(base));
+			Generator<Integer> greater = Generator.of(Any.integer().greaterThanOrEqualTo(base));
 
 			actual.add(Arrays.asList(base.get(), greater.get()));
 		}
@@ -393,7 +404,7 @@ public class NumericCaseTest {
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
 			Generator<Integer> base = Generator.of(Any.of(-10, 0, 10));
-			Generator<Integer> lesser = Generator.of(Any.integer().lessThan(base));
+			Generator<Integer> lesser = Generator.of(Any.integer().lessThanOrEqualTo(base));
 
 			actual.add(Arrays.asList(base.get(), lesser.get()));
 		}
@@ -569,7 +580,7 @@ public class NumericCaseTest {
 	public void testExcludingMinInclusive() {
 		Case<Integer> subject = Any.integer().inRange(5, 10).excluding(5);
 
-		Set<Integer> actual = subject.resolveAllOnce(random);
+		Set<Integer> actual = subject.generateAllOnce(random);
 
 		assertFalse(actual.contains(5));
 	}
@@ -578,7 +589,7 @@ public class NumericCaseTest {
 	public void testExcludingMaxInclusive() {
 		Case<Integer> subject = Any.integer().inRange(5, 10).excluding(10);
 
-		Set<Integer> actual = subject.resolveAllOnce(random);
+		Set<Integer> actual = subject.generateAllOnce(random);
 
 		assertFalse(actual.contains(10));
 	}
@@ -587,7 +598,7 @@ public class NumericCaseTest {
 	public void testExcludingZero() {
 		Case<Integer> subject = Any.integer().inRange(-5, 5).excluding(0);
 
-		Set<Integer> actual = subject.resolveAllOnce(random);
+		Set<Integer> actual = subject.generateAllOnce(random);
 
 		assertFalse(actual.contains(0));
 	}
@@ -596,7 +607,7 @@ public class NumericCaseTest {
 	public void testExcludingNarrowRange() {
 		Case<Integer> subject = Any.integer().inRange(1, 3).excluding(2);
 
-		Set<Integer> actual = subject.resolveAllOnce(random);
+		Set<Integer> actual = subject.generateAllOnce(random);
 
 		assertFalse(actual.contains(2));
 	}
@@ -605,7 +616,7 @@ public class NumericCaseTest {
 	public void testExcludingNarrowNegativeRange() {
 		Case<Integer> subject = Any.integer().inRange(-2, 2).excluding(-1);
 
-		Set<Integer> actual = subject.resolveAllOnce(random);
+		Set<Integer> actual = subject.generateAllOnce(random);
 
 		assertFalse(actual.contains(-1));
 	}
@@ -615,7 +626,7 @@ public class NumericCaseTest {
 		Case<Integer> subject = Any.integer().inRange(1, 2).excluding(1, 2);
 
 		try {
-			Set<Integer> actual = subject.resolveAllOnce(random);
+			Set<Integer> actual = subject.generateAllOnce(random);
 			fail("Expected IllegalStateException");
 		}
 		catch(IllegalStateException e) {
@@ -626,6 +637,62 @@ public class NumericCaseTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testWithinRangeOfGeneratorWithZeroRange() {
 		Any.integer().within(0);
+	}
+
+	@Test
+	public void testByteRangesWithZeroRng() {
+		assertFalse(Any.byteInteger().greaterThanOrEqualTo((byte)1).generateAllOnce(ZERO_RANDOM).contains((byte)0));
+		assertFalse(Any.byteInteger().lessThanOrEqualTo((byte)-1).generateAllOnce(ZERO_RANDOM).contains((byte)0));
+		assertFalse(Any.byteInteger().inRange((byte)-5, (byte)-1).generateAllOnce(ZERO_RANDOM).contains((byte)0));
+		assertFalse(Any.byteInteger().inRange((byte)1, (byte)5).generateAllOnce(ZERO_RANDOM).contains((byte)0));
+	}
+
+	@Test
+	public void testShortRangesWithZeroRng() {
+		assertFalse(Any.shortInteger().greaterThanOrEqualTo((short)1).generateAllOnce(ZERO_RANDOM).contains((short)0));
+		assertFalse(Any.shortInteger().lessThanOrEqualTo((short)-1).generateAllOnce(ZERO_RANDOM).contains((short)0));
+		assertFalse(Any.shortInteger().inRange((short)-5, (short)-1).generateAllOnce(ZERO_RANDOM).contains((short)0));
+		assertFalse(Any.shortInteger().inRange((short)1, (short)5).generateAllOnce(ZERO_RANDOM).contains((short)0));
+	}
+
+	@Test
+	public void testIntegerRangesWithZeroRng() {
+		assertFalse(Any.integer().greaterThanOrEqualTo(1).generateAllOnce(ZERO_RANDOM).contains(0));
+		assertFalse(Any.integer().lessThanOrEqualTo(-1).generateAllOnce(ZERO_RANDOM).contains(0));
+		assertFalse(Any.integer().inRange(-5, -1).generateAllOnce(ZERO_RANDOM).contains(0));
+		assertFalse(Any.integer().inRange(1, 5).generateAllOnce(ZERO_RANDOM).contains(0));
+	}
+
+	@Test
+	public void testLongRangesWithZeroRng() {
+		assertFalse(Any.longInteger().greaterThanOrEqualTo(1L).generateAllOnce(ZERO_RANDOM).contains(0L));
+		assertFalse(Any.longInteger().lessThanOrEqualTo(-1L).generateAllOnce(ZERO_RANDOM).contains(0L));
+		assertFalse(Any.longInteger().inRange(-5L, -1L).generateAllOnce(ZERO_RANDOM).contains(0L));
+		assertFalse(Any.longInteger().inRange(1L, 5L).generateAllOnce(ZERO_RANDOM).contains(0L));
+	}
+
+	@Test
+	public void testByteRngCannotProduceZero() {
+		NumericCase<Byte> bytes = Any.byteInteger();
+		assertNotEquals(new Byte((byte)0), bytes.rng(ZERO_RANDOM));
+	}
+
+	@Test
+	public void testShortRngCannotProduceZero() {
+		NumericCase<Short> shorts = Any.shortInteger();
+		assertNotEquals(new Short((short)0), shorts.rng(ZERO_RANDOM));
+	}
+
+	@Test
+	public void testIntegerRngCannotProduceZero() {
+		NumericCase<Integer> ints = Any.integer();
+		assertNotEquals(new Integer(0), ints.rng(ZERO_RANDOM));
+	}
+
+	@Test
+	public void testLongRngCannotProduceZero() {
+		NumericCase<Long> longs = Any.longInteger();
+		assertNotEquals(new Long(0L), longs.rng(ZERO_RANDOM));
 	}
 
 	private SupplierExpectations assertSuppliers(Set<Function<Random, Integer>> suppliers) {
@@ -733,5 +800,10 @@ public class NumericCaseTest {
 			@Override public String toString() { return low + " ≤ i ≤ " + high; }
 		};
 	}
+
+	private static final Random ZERO_RANDOM = new Random() {
+		@Override
+		protected int next(int bits) { return 0; }
+	};
 
 }

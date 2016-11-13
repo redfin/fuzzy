@@ -4,8 +4,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -236,6 +238,37 @@ public class ContextTest {
 
 		assertEquals(3, secondValues.size());
 		assertNotEquals(firstValues, secondValues);
+	}
+
+	@Test
+	public void testValuesForCurrentIteration() {
+		Context.init(0);
+
+		Generator<String> string = Generator.of("Hello");
+		Generator<Integer> integer = Generator.of(5);
+
+		string.get();
+		integer.get();
+
+		Map<Generator, Object> expected = new HashMap<>();
+		expected.put(string, "Hello");
+		expected.put(integer, 5);
+
+		assertEquals(expected, Context.valuesForCurrentIteration());
+
+		Context.cleanUp();
+	}
+
+	@Test
+	public void testValuesForCurrentIterationUninitialized() {
+		Context.cleanUp();
+		try {
+			Context.valuesForCurrentIteration();
+			fail("Expected IllegalStateException");
+		}
+		catch(IllegalStateException e) {
+			// expected
+		}
 	}
 
 }

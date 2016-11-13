@@ -1,13 +1,14 @@
 package com.redfin.fuzzy;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class CasesTest {
 
@@ -43,5 +44,8 @@ public class CasesTest {
 			values
 		);
 	}
+
+	@Test
+	public void testConstructorForCoverage() { new Cases(); }
 
 }

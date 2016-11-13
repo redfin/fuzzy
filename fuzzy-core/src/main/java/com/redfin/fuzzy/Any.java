@@ -35,24 +35,24 @@ public class Any {
 	}
 
 	public static NumericCase<Byte> byteInteger() { return NumericCase.ofBytes(); }
-	public static Case<Byte> positiveByteInteger() { return NumericCase.ofBytes().greaterThan((byte)0); }
-	public static Case<Byte> positiveNonZeroByteInteger() { return NumericCase.ofBytes().greaterThan((byte)1); }
-	public static Case<Byte> negativeByteInteger() { return NumericCase.ofBytes().lessThan((byte)-1); }
+	public static Case<Byte> positiveByteInteger() { return NumericCase.ofBytes().greaterThanOrEqualTo((byte)0); }
+	public static Case<Byte> positiveNonZeroByteInteger() { return NumericCase.ofBytes().greaterThanOrEqualTo((byte)1); }
+	public static Case<Byte> negativeByteInteger() { return NumericCase.ofBytes().lessThanOrEqualTo((byte)-1); }
 
 	public static NumericCase<Short> shortInteger() { return NumericCase.ofShorts(); }
-	public static Case<Short> positiveShortInteger() { return NumericCase.ofShorts().greaterThan((short)0); }
-	public static Case<Short> positiveNonZeroShortInteger() { return NumericCase.ofShorts().greaterThan((short)1); }
-	public static Case<Short> negativeShortInteger() { return NumericCase.ofShorts().lessThan((short)-1); }
+	public static Case<Short> positiveShortInteger() { return NumericCase.ofShorts().greaterThanOrEqualTo((short)0); }
+	public static Case<Short> positiveNonZeroShortInteger() { return NumericCase.ofShorts().greaterThanOrEqualTo((short)1); }
+	public static Case<Short> negativeShortInteger() { return NumericCase.ofShorts().lessThanOrEqualTo((short)-1); }
 
 	public static NumericCase<Integer> integer() { return NumericCase.ofIntegers(); }
-	public static Case<Integer> positiveInteger() { return NumericCase.ofIntegers().greaterThan(0); }
-	public static Case<Integer> positiveNonZeroInteger() { return NumericCase.ofIntegers().greaterThan(1); }
-	public static Case<Integer> negativeInteger() { return NumericCase.ofIntegers().lessThan(-1); }
+	public static Case<Integer> positiveInteger() { return NumericCase.ofIntegers().greaterThanOrEqualTo(0); }
+	public static Case<Integer> positiveNonZeroInteger() { return NumericCase.ofIntegers().greaterThanOrEqualTo(1); }
+	public static Case<Integer> negativeInteger() { return NumericCase.ofIntegers().lessThanOrEqualTo(-1); }
 
 	public static NumericCase<Long> longInteger() { return NumericCase.ofLongs(); }
-	public static Case<Long> positiveLongInteger() { return NumericCase.ofLongs().greaterThan(0L); }
-	public static Case<Long> positiveNonZeroLongInteger() { return NumericCase.ofLongs().greaterThan(1L); }
-	public static Case<Long> negativeLongInteger() { return NumericCase.ofLongs().lessThan(-1L); }
+	public static Case<Long> positiveLongInteger() { return NumericCase.ofLongs().greaterThanOrEqualTo(0L); }
+	public static Case<Long> positiveNonZeroLongInteger() { return NumericCase.ofLongs().greaterThanOrEqualTo(1L); }
+	public static Case<Long> negativeLongInteger() { return NumericCase.ofLongs().lessThanOrEqualTo(-1L); }
 
 	public static StringCase string() { return new StringCase(); }
 

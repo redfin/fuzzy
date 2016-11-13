@@ -1,16 +1,33 @@
 package com.redfin.fuzzy;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class UtilTest {
+
+	@Test
+	public void testSetOfNothing() {
+		assertEquals(new HashSet<>(), Util.setOf());
+	}
+
+	@Test
+	public void testToCharSetOfNull() {
+		assertEquals(new HashSet<>(), Util.toCharSet(null));
+	}
+
+	@Test
+	public void testToCharSetOfEmpty() {
+		assertEquals(new HashSet<>(), Util.toCharSet(""));
+	}
 
 	@Test
 	public void testInspectNull() {
@@ -125,5 +142,8 @@ public class UtilTest {
 		m.put(2, "Hi");
 		assertEquals("{1: {1: {1: ..., 2: \"Hi\"}, 2: \"Hi\"}, 2: \"Hi\"}", Util.inspect(m));
 	}
+
+	@Test
+	public void testConstructorForCoverage() { new Util(); }
 
 }
