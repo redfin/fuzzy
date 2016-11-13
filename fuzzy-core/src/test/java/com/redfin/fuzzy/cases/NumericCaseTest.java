@@ -695,6 +695,23 @@ public class NumericCaseTest {
 		assertNotEquals(new Long(0L), longs.rng(ZERO_RANDOM));
 	}
 
+	@Test
+	public void testLongAdditionalSuppliers() {
+		Set<Long> longs;
+
+		longs = Any.longInteger().generateAllOnce(random);
+		assertTrue(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE));
+		assertTrue(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE));
+
+		longs = Any.longInteger().lessThanOrEqualTo(Integer.MAX_VALUE + 10L).generateAllOnce(random);
+		assertTrue(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE));
+		assertFalse(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE + 10L));
+
+		longs = Any.longInteger().greaterThanOrEqualTo(Integer.MIN_VALUE - 10L).generateAllOnce(random);
+		assertTrue(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE));
+		assertFalse(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE - 10L));
+	}
+
 	private SupplierExpectations assertSuppliers(Set<Function<Random, Integer>> suppliers) {
 		SupplierExpectations res = new SupplierExpectations();
 

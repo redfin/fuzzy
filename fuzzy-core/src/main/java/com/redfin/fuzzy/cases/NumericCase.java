@@ -37,6 +37,9 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		return this;
 	}
 
+	protected T getMax() { return max; }
+	protected T getMin() { return min; }
+
 	public Case<T> lessThanOrEqualTo(T maxInclusive) {
 		Preconditions.checkNotNull(maxInclusive);
 		min = null;
@@ -196,6 +199,9 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		if(min != null && !min.equals(zero) && !excluded.contains(min)) suppliers.add(r -> min);
 		if(max != null && !max.equals(zero) && !excluded.contains(max)) suppliers.add(r -> max);
 
+		// Let the subclass add additional cases if it wants to.
+		addAdditionalSuppliers(suppliers);
+
 		return suppliers.stream().map(this::exclude).collect(Collectors.toSet());
 	}
 
@@ -209,6 +215,8 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 
 	protected abstract T rng(Random random);
 	protected abstract T rngLessThan(Random random, T maxInclusive);
+
+	protected void addAdditionalSuppliers(Set<Function<Random, T>> suppliers) {}
 
 	public static NumericCase<Byte> ofBytes() {
 		return new NumericCase<Byte>() {
@@ -321,6 +329,27 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 				}
 				else {
 					return (long) 1 + random.nextInt(maxInclusive.intValue());
+				}
+			}
+
+			@Override
+			protected void addAdditionalSuppliers(Set<Function<Random, Long>> suppliers) {
+				// If supported by their bounds, make sure to add negative and positive cases for values larger
+				// than regular integers can handle.
+				if(getMin() == null) {
+					suppliers.add(r -> (long)Integer.MIN_VALUE - (1L + (r.nextInt() & 0x3FFFFFFFL)));
+				}
+				else if(getMin() < Integer.MIN_VALUE) {
+					final int d = (int)(Integer.MIN_VALUE - getMin()) - 1;
+					suppliers.add(r -> (long)Integer.MIN_VALUE - (1L + r.nextInt(d)));
+				}
+
+				if(getMax() == null) {
+					suppliers.add(r -> (long)Integer.MAX_VALUE + 1L + (r.nextInt() & 0x3FFFFFFFL));
+				}
+				else if(getMax() > Integer.MAX_VALUE) {
+					final int d = (int)(getMax() - Integer.MAX_VALUE) - 1;
+					suppliers.add(r -> (long)Integer.MAX_VALUE + 1L + r.nextInt(d));
 				}
 			}
 		};
