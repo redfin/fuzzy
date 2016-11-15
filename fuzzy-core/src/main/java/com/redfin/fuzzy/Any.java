@@ -1,6 +1,8 @@
 package com.redfin.fuzzy;
 
+import com.redfin.fuzzy.cases.DoubleNumericCase;
 import com.redfin.fuzzy.cases.EnumCase;
+import com.redfin.fuzzy.cases.FloatNumericCase;
 import com.redfin.fuzzy.cases.NullableCase;
 import com.redfin.fuzzy.cases.NumericCase;
 import com.redfin.fuzzy.cases.StringCase;
@@ -53,6 +55,18 @@ public class Any {
 	public static Case<Long> positiveLongInteger() { return NumericCase.ofLongs().greaterThanOrEqualTo(0L); }
 	public static Case<Long> positiveNonZeroLongInteger() { return NumericCase.ofLongs().greaterThanOrEqualTo(1L); }
 	public static Case<Long> negativeLongInteger() { return NumericCase.ofLongs().lessThanOrEqualTo(-1L); }
+
+	public static DoubleNumericCase doublePrecisionNumber() { return new DoubleNumericCase(); }
+	public static Case<Double> doublePrecisionFraction() { return new DoubleNumericCase().inRange(0, 1); }
+	public static Case<Double> positiveDoublePrecisionNumber() { return new DoubleNumericCase().greaterThanOrEqualTo(0); }
+	public static Case<Double> positiveNonZeroDoublePrecisionNumber() { return new DoubleNumericCase().greaterThan(0); }
+	public static Case<Double> negativeDoublePrecisionNumber() { return new DoubleNumericCase().lessThan(0); }
+
+	public static FloatNumericCase singlePrecisionNumber() { return new FloatNumericCase(); }
+	public static Case<Float> singlePrecisionFraction() { return new FloatNumericCase().inRange(0, 1); }
+	public static Case<Float> positiveSinglePrecisionNumber() { return new FloatNumericCase().greaterThanOrEqualTo(0); }
+	public static Case<Float> positiveNonZeroSinglePrecisionNumber() { return new FloatNumericCase().greaterThan(0); }
+	public static Case<Float> negativeSinglePrecisionNumber() { return new FloatNumericCase().lessThan(0); }
 
 	public static StringCase string() { return new StringCase(); }
 

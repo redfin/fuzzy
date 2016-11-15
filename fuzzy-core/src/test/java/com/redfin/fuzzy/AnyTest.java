@@ -112,6 +112,54 @@ public class AnyTest {
 	}
 
 	@Test
+	public void testDoublePrecisionFraction() {
+		Set<Double> doubles = Any.doublePrecisionFraction().generateAllOnce(random);
+		assertFalse(doubles.stream().anyMatch(d -> d < 0 || d > 1));
+	}
+
+	@Test
+	public void testPositiveDoublePrecisionNumber() {
+		Set<Double> doubles = Any.positiveDoublePrecisionNumber().generateAllOnce(random);
+		assertFalse(doubles.stream().anyMatch(d -> d < 0));
+	}
+
+	@Test
+	public void testPositiveNonZeroDoublePrecisionNumber() {
+		Set<Double> doubles = Any.positiveNonZeroDoublePrecisionNumber().generateAllOnce(random);
+		assertFalse(doubles.stream().anyMatch(d -> d <= 0));
+	}
+
+	@Test
+	public void testNegativeDoublePrecisionNumber() {
+		Set<Double> doubles = Any.negativeDoublePrecisionNumber().generateAllOnce(random);
+		assertFalse(doubles.stream().anyMatch(d -> d >= 0));
+	}
+
+	@Test
+	public void testSinglePrecisionFraction() {
+		Set<Float> floats = Any.singlePrecisionFraction().generateAllOnce(random);
+		assertFalse(floats.stream().anyMatch(f -> f < 0 || f > 1));
+	}
+
+	@Test
+	public void testPositiveSinglePrecisionNumber() {
+		Set<Float> floats = Any.positiveSinglePrecisionNumber().generateAllOnce(random);
+		assertFalse(floats.stream().anyMatch(f -> f < 0));
+	}
+
+	@Test
+	public void testPositiveNonZeroSinglePrecisionNumber() {
+		Set<Float> floats = Any.positiveNonZeroSinglePrecisionNumber().generateAllOnce(random);
+		assertFalse(floats.stream().anyMatch(f -> f <= 0));
+	}
+
+	@Test
+	public void testNegativeSinglePrecisionNumber() {
+		Set<Float> floats = Any.negativeSinglePrecisionNumber().generateAllOnce(random);
+		assertFalse(floats.stream().anyMatch(f -> f >= 0));
+	}
+
+	@Test
 	public void testConstructorForCoverage() {
 		new Any();
 	}

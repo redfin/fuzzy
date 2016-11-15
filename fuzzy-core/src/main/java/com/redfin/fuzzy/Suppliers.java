@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,32 @@ public class Suppliers {
 		mapped.addAll(suppliers.stream().map(mapping).collect(Collectors.toList()));
 
 		return mapped;
+	}
+
+	public static <INPUT, OUTPUT> Set<Function<Random, OUTPUT>> mapOutput(
+		Set<Function<Random, INPUT>> suppliers,
+		BiFunction<Random, INPUT, OUTPUT> mapping
+	) {
+		Preconditions.checkNotNull(suppliers);
+		Preconditions.checkNotNull(mapping);
+
+		Function<Function<Random, INPUT>, Function<Random, OUTPUT>> mapper =
+			s -> (r -> mapping.apply(r, s.apply(r)));
+
+		return suppliers.stream().map(mapper).collect(Collectors.toSet());
+	}
+
+	public static <INPUT, OUTPUT> Set<Function<Random, OUTPUT>> mapOutput(
+		Set<Function<Random, INPUT>> suppliers,
+		Function<INPUT, OUTPUT> mapping
+	) {
+		Preconditions.checkNotNull(suppliers);
+		Preconditions.checkNotNull(mapping);
+
+		Function<Function<Random, INPUT>, Function<Random, OUTPUT>> mapper =
+			s -> (r -> mapping.apply(s.apply(r)));
+
+		return suppliers.stream().map(mapper).collect(Collectors.toSet());
 	}
 
 	public interface BiPermutedSupplierFunction<T, U, R> {
