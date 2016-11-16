@@ -4,20 +4,20 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
 
-public class PreconditionsTest {
+public class FuzzyPreconditionsTest {
 
 	@Test
 	public void testCheckNotNullMessageWithNonnull() {
 		Object expected = new Object();
-		assertSame(expected, Preconditions.checkNotNull("", expected));
+		assertSame(expected, FuzzyPreconditions.checkNotNull("", expected));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testCheckNotNullMessageWithNull() {
-		Preconditions.checkNotNull("my message", null);
+		FuzzyPreconditions.checkNotNull("my message", null);
 	}
 
 	@Test
-	public void testConstructorForCoverage() { new Preconditions(); }
+	public void testConstructorForCoverage() { new FuzzyPreconditions(); }
 
 }

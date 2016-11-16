@@ -1,7 +1,7 @@
 package com.redfin.fuzzy.junit;
 
 import com.redfin.fuzzy.Context;
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -126,7 +126,7 @@ public class FuzzyRule implements TestRule {
 		private boolean failImmediately = true;
 
 		public Config withTestReporter(TestReporter testReporter) {
-			this.testReporter = Preconditions.checkNotNull(testReporter);
+			this.testReporter = FuzzyPreconditions.checkNotNull(testReporter);
 			return this;
 		}
 

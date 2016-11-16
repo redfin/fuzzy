@@ -1,6 +1,6 @@
 package com.redfin.fuzzy.cases;
 
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import com.redfin.fuzzy.Case;
 import java.util.HashSet;
 import java.util.Random;
@@ -12,7 +12,7 @@ public class NullableCase<T> implements Case<T> {
 	private final Case<T> delegateCase;
 
 	public NullableCase(Case<T> delegateCase) {
-		this.delegateCase = Preconditions.checkNotNull(delegateCase);
+		this.delegateCase = FuzzyPreconditions.checkNotNull(delegateCase);
 	}
 
 	@Override

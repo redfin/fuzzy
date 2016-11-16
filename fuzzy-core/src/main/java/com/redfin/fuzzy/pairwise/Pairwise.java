@@ -1,6 +1,6 @@
 package com.redfin.fuzzy.pairwise;
 
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ public class Pairwise<S extends Set> {
 	private final List<Param> params;
 
 	public Pairwise(List<S> parameters) {
-		Preconditions.checkNotNull(parameters);
+		FuzzyPreconditions.checkNotNull(parameters);
 
 		List<Param> params = new ArrayList<>();
 		int i = 0;
 		for(Set<?> parameter : parameters) {
-			Preconditions.checkNotNullAndContainsNoNulls(parameter);
+			FuzzyPreconditions.checkNotNullAndContainsNoNulls(parameter);
 			params.add(new Param(i++, new ArrayList<>(parameter)));
 		}
 

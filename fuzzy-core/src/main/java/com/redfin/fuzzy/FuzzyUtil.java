@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class Util {
+public class FuzzyUtil {
 
 	@SafeVarargs
 	public static <T> Set<T> union(Set<T>... sets) {
@@ -70,7 +70,7 @@ public class Util {
 	}
 
 	public static void inspectTo(StringBuilder sb, Object value) {
-		Preconditions.checkNotNull(sb);
+		FuzzyPreconditions.checkNotNull(sb);
 		inspectToInternal(sb, value, 1);
 	}
 

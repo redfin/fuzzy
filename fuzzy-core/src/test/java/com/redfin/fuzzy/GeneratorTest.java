@@ -35,7 +35,7 @@ public class GeneratorTest {
 		}
 		while(Context.next());
 
-		assertEquals(Util.setOf(1, 2, 3), actuals);
+		assertEquals(FuzzyUtil.setOf(1, 2, 3), actuals);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class GeneratorTest {
 		}
 		while(Context.next());
 
-		assertEquals(Util.setOf(1, 2, 3), actuals);
+		assertEquals(FuzzyUtil.setOf(1, 2, 3), actuals);
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class GeneratorTest {
 		}
 		while(Context.next());
 
-		assertEquals(Util.setOf(1, 2, 3), actuals);
+		assertEquals(FuzzyUtil.setOf(1, 2, 3), actuals);
 	}
 
 	@Test

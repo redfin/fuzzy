@@ -116,7 +116,7 @@ public class ContextTest {
 			actuals.add(myString.get());
 		} while(Context.next());
 
-		assertEquals(Util.setOf("One", "Two", "Three"), actuals);
+		assertEquals(FuzzyUtil.setOf("One", "Two", "Three"), actuals);
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class ContextTest {
 		} while(Context.next());
 
 		assertEquals(
-			Util.setOf("A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"),
+			FuzzyUtil.setOf("A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"),
 			actuals
 		);
 	}

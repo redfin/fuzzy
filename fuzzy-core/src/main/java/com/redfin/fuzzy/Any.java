@@ -9,8 +9,6 @@ import com.redfin.fuzzy.cases.NumericCase;
 import com.redfin.fuzzy.cases.StringCase;
 import com.redfin.fuzzy.cases.UnionCase;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -38,7 +36,7 @@ public class Any {
 	}
 
 	public static <T> Case<T> nullableOf(Supplier<Case<T>> delegateCase) {
-		return nullableOf(Preconditions.checkNotNull(delegateCase).get());
+		return nullableOf(FuzzyPreconditions.checkNotNull(delegateCase).get());
 	}
 
 	public static NumericCase<Byte> byteInteger() { return NumericCase.ofBytes(); }

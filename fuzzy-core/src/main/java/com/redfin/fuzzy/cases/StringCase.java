@@ -4,9 +4,9 @@ import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Cases;
 import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import com.redfin.fuzzy.Suppliers;
-import com.redfin.fuzzy.Util;
+import com.redfin.fuzzy.FuzzyUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -17,14 +17,14 @@ import java.util.function.Function;
 public class StringCase implements Case<String> {
 
 	/*package*/ static final Set<String> ALPHABET_CHARS = Collections.unmodifiableSet(
-		Util.toCharSet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+		FuzzyUtil.toCharSet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	);
-	/*package*/ static final Set<String> DIGIT_CHARS = Collections.unmodifiableSet(Util.toCharSet("0123456789"));
-	/*package*/ static final Set<String> HEX_CHARS = Collections.unmodifiableSet(Util.toCharSet("0123456789abcdef"));
+	/*package*/ static final Set<String> DIGIT_CHARS = Collections.unmodifiableSet(FuzzyUtil.toCharSet("0123456789"));
+	/*package*/ static final Set<String> HEX_CHARS = Collections.unmodifiableSet(FuzzyUtil.toCharSet("0123456789abcdef"));
 
-	/*package*/ static final Set<String> UNICODE_CHARS = Collections.unmodifiableSet(Util.toCharSet("アあ語ΔᎣ‰✈"));
-	/*package*/ static final Set<String> EMOJI_CHARS = Collections.unmodifiableSet(Util.setOf("\uD83C\uDF35", "\uD83C\uDF54", "\uD83D\uDC17"));
-	/*package*/ static final Set<String> WHITESPACE_CHARS = Collections.unmodifiableSet(Util.toCharSet(" \t\r\n\f"));
+	/*package*/ static final Set<String> UNICODE_CHARS = Collections.unmodifiableSet(FuzzyUtil.toCharSet("アあ語ΔᎣ‰✈"));
+	/*package*/ static final Set<String> EMOJI_CHARS = Collections.unmodifiableSet(FuzzyUtil.setOf("\uD83C\uDF35", "\uD83C\uDF54", "\uD83D\uDC17"));
+	/*package*/ static final Set<String> WHITESPACE_CHARS = Collections.unmodifiableSet(FuzzyUtil.toCharSet(" \t\r\n\f"));
 
 	// Note: we're using a single string here instead of a character set because we want to increase the chances of each
 	// of these characters being included. TODO: break each character into a separate case?
@@ -32,11 +32,11 @@ public class StringCase implements Case<String> {
 		Collections.singleton("--'\",$%\\<&")
 	);
 
-	private static final Set<String> STANDARD_CHARS = Collections.unmodifiableSet(Util.union(
+	private static final Set<String> STANDARD_CHARS = Collections.unmodifiableSet(FuzzyUtil.union(
 		ALPHABET_CHARS,
 		DIGIT_CHARS,
 		WHITESPACE_CHARS,
-		Util.toCharSet("~!@#$%^&*()_+`-=[]\\{}|;':\",./<>?")
+		FuzzyUtil.toCharSet("~!@#$%^&*()_+`-=[]\\{}|;':\",./<>?")
 	));
 
 	private Case<Integer> length = Any.of(
@@ -53,7 +53,7 @@ public class StringCase implements Case<String> {
 	);
 
 	public StringCase withLengthOf(Case<Integer> length) {
-		this.length = Preconditions.checkNotNull(length);
+		this.length = FuzzyPreconditions.checkNotNull(length);
 		return this;
 	}
 
@@ -64,7 +64,7 @@ public class StringCase implements Case<String> {
 	public StringCase nonEmpty() { return withLengthOf(Any.integer().inRange(1, 256)); }
 
 	public StringCase withSourceStringsOf(Case<Set<String>> sourceChars) {
-		sourceStrings = Preconditions.checkNotNull(sourceChars);
+		sourceStrings = FuzzyPreconditions.checkNotNull(sourceChars);
 		return this;
 	}
 
@@ -73,7 +73,7 @@ public class StringCase implements Case<String> {
 	}
 
 	public StringCase withSourceStrings(String... sourceStrings) {
-		Preconditions.checkNotNullAndContainsNoNulls(sourceStrings);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(sourceStrings);
 
 		Set<String> sourceStringSet = new HashSet<>(sourceStrings.length);
 		sourceStringSet.addAll(Arrays.asList(sourceStrings));
@@ -82,12 +82,12 @@ public class StringCase implements Case<String> {
 	}
 
 	public StringCase withSourceCharsOf(Case<String> sourceChars) {
-		return withSourceStringsOf(Cases.map(sourceChars, Util::toCharSet));
+		return withSourceStringsOf(Cases.map(sourceChars, FuzzyUtil::toCharSet));
 	}
 
 	public StringCase withSourceChars(String sourceChars) {
-		Preconditions.checkNotNull(sourceChars);
-		return withSourceStrings(Util.toCharSet(sourceChars));
+		FuzzyPreconditions.checkNotNull(sourceChars);
+		return withSourceStrings(FuzzyUtil.toCharSet(sourceChars));
 	}
 
 	public StringCase withOnlyAlphabetChars() {
@@ -99,7 +99,7 @@ public class StringCase implements Case<String> {
 	}
 
 	public StringCase withOnlyAlphanumericChars() {
-		return withSourceStrings(Util.union(ALPHABET_CHARS, DIGIT_CHARS));
+		return withSourceStrings(FuzzyUtil.union(ALPHABET_CHARS, DIGIT_CHARS));
 	}
 
 	public StringCase withOnlyHexChars() {

@@ -23,7 +23,7 @@ public class AnyTest {
 	@Test
 	public void testOfFunctions() {
 		Case<Integer> c = Any.of(r -> 1, r -> 2, r -> 3);
-		assertEquals(Util.setOf(1, 2, 3), c.generateAllOnce(random));
+		assertEquals(FuzzyUtil.setOf(1, 2, 3), c.generateAllOnce(random));
 	}
 
 	@Test
@@ -193,7 +193,7 @@ public class AnyTest {
 	@Test
 	public void testAnyBool() {
 		Set<Boolean> actuals = Any.bool().generateAllOnce();
-		assertEquals(Util.setOf(true, false), actuals);
+		assertEquals(FuzzyUtil.setOf(true, false), actuals);
 	}
 
 	@Test

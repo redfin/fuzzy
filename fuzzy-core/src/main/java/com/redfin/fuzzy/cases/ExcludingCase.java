@@ -1,7 +1,7 @@
 package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Case;
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import com.redfin.fuzzy.Suppliers;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +26,7 @@ public class ExcludingCase<T> implements Case<T> {
 	}
 
 	public ExcludingCase(Case<T> baseCase, Iterable<T> excludedValues) {
-		Preconditions.checkNotNull(baseCase);
+		FuzzyPreconditions.checkNotNull(baseCase);
 
 		this.baseCase = baseCase;
 

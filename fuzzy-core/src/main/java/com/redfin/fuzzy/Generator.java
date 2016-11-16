@@ -27,7 +27,7 @@ public class Generator<T> implements Comparable<Generator<T>> {
 	}
 
 	public static GeneratorBuilder named(String name) {
-		return new GeneratorBuilder(Preconditions.checkNotNull(name));
+		return new GeneratorBuilder(FuzzyPreconditions.checkNotNull(name));
 	}
 
 	@SafeVarargs
@@ -73,8 +73,8 @@ public class Generator<T> implements Comparable<Generator<T>> {
 
 		@SafeVarargs
 		public final <X> Generator<X> of(Case<X>... cases) {
-			Preconditions.checkNotNullAndContainsNoNulls(cases);
-			Preconditions.checkNotEmpty(cases);
+			FuzzyPreconditions.checkNotNullAndContainsNoNulls(cases);
+			FuzzyPreconditions.checkNotEmpty(cases);
 
 			// Build the generator
 			Context c = Context.getUnlocked();
@@ -97,8 +97,8 @@ public class Generator<T> implements Comparable<Generator<T>> {
 
 		@SafeVarargs
 		public final <X> Generator<X> of(Function<Random, X>... suppliers) {
-			Preconditions.checkNotNullAndContainsNoNulls(suppliers);
-			return this.of(() -> Util.setOf(suppliers));
+			FuzzyPreconditions.checkNotNullAndContainsNoNulls(suppliers);
+			return this.of(() -> FuzzyUtil.setOf(suppliers));
 		}
 	}
 

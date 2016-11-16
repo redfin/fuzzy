@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.Util;
+import com.redfin.fuzzy.FuzzyUtil;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -84,7 +84,7 @@ public class CollectionCaseTest {
 			.withHomogeneousElementSuppliers()
 			.generateAllOnce(random);
 
-		Set<List<Integer>> expecteds = Util.setOf(
+		Set<List<Integer>> expecteds = FuzzyUtil.setOf(
 			Arrays.asList(1, 1, 1),
 			Arrays.asList(1, 1, 1, 1),
 			Arrays.asList(2, 2, 2),

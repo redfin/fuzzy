@@ -23,7 +23,7 @@ public class CasesTest {
 
 		Set<Integer> actuals = composedCase.generateAllOnce();
 
-		assertEquals(Util.setOf(20, 200, 2000, 30, 300, 3000), actuals);
+		assertEquals(FuzzyUtil.setOf(20, 200, 2000, 30, 300, 3000), actuals);
 	}
 
 	@Test
@@ -38,14 +38,14 @@ public class CasesTest {
 
 		assertEquals(3, actuals.size());
 
-		Set<Integer> expecteds = Util.setOf(20, 200, 2000, 30, 300, 3000);
+		Set<Integer> expecteds = FuzzyUtil.setOf(20, 200, 2000, 30, 300, 3000);
 		assertFalse(expecteds.stream().anyMatch(i -> !expecteds.contains(i)));
 	}
 
 	@Test
 	public void testCompose1() {
 		Case<String> subject = Cases.compose(Literal.value(1), (random, a) -> "" + a);
-		assertEquals(Util.setOf("1"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("1"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2),
 			(random, a, b) -> "" + a + b
 		);
-		assertEquals(Util.setOf("12"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("12"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3),
 			(random, a, b, c) -> "" + a + b + c
 		);
-		assertEquals(Util.setOf("123"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("123"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3), Literal.value(4),
 			(random, a, b, c, d) -> "" + a + b + c + d
 		);
-		assertEquals(Util.setOf("1234"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("1234"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3), Literal.value(4), Literal.value(5),
 			(random, a, b, c, d, e) -> "" + a + b + c + d + e
 		);
-		assertEquals(Util.setOf("12345"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("12345"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3), Literal.value(4), Literal.value(5), Literal.value(6),
 			(random, a, b, c, d, e, f) -> "" + a + b + c + d + e + f
 		);
-		assertEquals(Util.setOf("123456"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("123456"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3), Literal.value(4), Literal.value(5), Literal.value(6), Literal.value(7),
 			(random, a, b, c, d, e, f, g) -> "" + a + b + c + d + e + f + g
 		);
-		assertEquals(Util.setOf("1234567"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("1234567"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -115,7 +115,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3), Literal.value(4), Literal.value(5), Literal.value(6), Literal.value(7), Literal.value(8),
 			(random, a, b, c, d, e, f, g, i) -> "" + a + b + c + d + e + f + g + i
 		);
-		assertEquals(Util.setOf("12345678"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("12345678"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class CasesTest {
 			Literal.value(1), Literal.value(2), Literal.value(3), Literal.value(4), Literal.value(5), Literal.value(6), Literal.value(7), Literal.value(8), Literal.value(9),
 			(random, a, b, c, d, e, f, g, i, j) -> "" + a + b + c + d + e + f + g + i + j
 		);
-		assertEquals(Util.setOf("123456789"), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf("123456789"), subject.generateAllOnce());
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class CasesTest {
 
 	@Test
 	public void testMapWithMultipleSuppliers() {
-		Case<String> original = () -> Util.setOf(
+		Case<String> original = () -> FuzzyUtil.setOf(
 			r -> "1234",
 			r -> "5678"
 		);
@@ -156,7 +156,7 @@ public class CasesTest {
 		;
 
 		assertEquals(
-			Util.setOf(-1234, -5678),
+			FuzzyUtil.setOf(-1234, -5678),
 			values
 		);
 	}

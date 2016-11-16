@@ -2,7 +2,7 @@ package com.redfin.fuzzy;
 
 import java.util.Collection;
 
-public class Preconditions {
+public class FuzzyPreconditions {
 
 	public static <T> T checkNotNull(T t) {
 		if(t == null) throw new NullPointerException();

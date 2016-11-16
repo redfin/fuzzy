@@ -69,9 +69,9 @@ public class Cases {
 		Case[] baseCases,
 		BiFunction<Random, Object[], OUTPUT> composition
 	) {
-		Preconditions.checkNotNull("caseCompositionMode is required.", caseCompositionMode);
-		Preconditions.checkNotNullAndContainsNoNulls(baseCases);
-		Preconditions.checkNotNull("composition function is required.", composition);
+		FuzzyPreconditions.checkNotNull("caseCompositionMode is required.", caseCompositionMode);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(baseCases);
+		FuzzyPreconditions.checkNotNull("composition function is required.", composition);
 
 		Function[][] composedSubcases = caseCompositionMode.algorithm.apply(baseCases);
 		Set<Function<Random, OUTPUT>> suppliers = new HashSet<>();
@@ -339,14 +339,14 @@ public class Cases {
 
 	@SafeVarargs
 	public static <T> Case<T> of(Function<Random, T>... suppliers) {
-		Preconditions.checkNotNullAndContainsNoNulls(suppliers);
-		Set<Function<Random, T>> suppliersSet = Util.setOf(suppliers);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(suppliers);
+		Set<Function<Random, T>> suppliersSet = FuzzyUtil.setOf(suppliers);
 		return () -> suppliersSet;
 	}
 
 	@SafeVarargs
 	public static <T> Case<T> of(Supplier<T>... suppliers) {
-		Preconditions.checkNotNullAndContainsNoNulls(suppliers);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(suppliers);
 
 		Set<Function<Random, T>> suppliersSet = new HashSet<>(suppliers.length);
 		for(Supplier<T> supplier : suppliers) {
@@ -358,7 +358,7 @@ public class Cases {
 
 	@SafeVarargs
 	public static <T> Case<T> of(T... literalCases) {
-		Preconditions.checkNotNull(literalCases);
+		FuzzyPreconditions.checkNotNull(literalCases);
 
 		Set<Function<Random, T>> suppliersSet = new HashSet<>(literalCases.length);
 		for(T t : literalCases) {
@@ -370,7 +370,7 @@ public class Cases {
 
 	@SafeVarargs
 	public static <T> Case<T> ofDelegates(Supplier<Case<T>>... delegateCases) {
-		Preconditions.checkNotNullAndContainsNoNulls(delegateCases);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(delegateCases);
 
 		Set<Function<Random, T>> suppliers = new HashSet<>();
 		for(Supplier<Case<T>> delegate : delegateCases) {
@@ -381,15 +381,15 @@ public class Cases {
 	}
 
 	public static <T, U> Case<U> map(Case<T> original, Function<T, U> mapping) {
-		Preconditions.checkNotNull(original);
-		Preconditions.checkNotNull(mapping);
+		FuzzyPreconditions.checkNotNull(original);
+		FuzzyPreconditions.checkNotNull(mapping);
 
 		return map(original, (r, t) -> mapping.apply(t));
 	}
 
 	public static <T, U> Case<U> map(Case<T> original, BiFunction<Random, T, U> mapping) {
-		Preconditions.checkNotNull(original);
-		Preconditions.checkNotNull(mapping);
+		FuzzyPreconditions.checkNotNull(original);
+		FuzzyPreconditions.checkNotNull(mapping);
 
 		return () -> {
 			Set<Function<Random, T>> sourceSuppliers = original.getSuppliers();

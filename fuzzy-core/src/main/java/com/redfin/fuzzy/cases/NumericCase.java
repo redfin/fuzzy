@@ -4,7 +4,7 @@ import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Generator;
 import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import com.redfin.fuzzy.Suppliers;
 
 import java.util.Collections;
@@ -24,8 +24,8 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	private final Set<T> excluded = new HashSet<T>();
 
 	public Case<T> inRange(T minInclusive, T maxInclusive) {
-		Preconditions.checkNotNull(minInclusive);
-		Preconditions.checkNotNull(maxInclusive);
+		FuzzyPreconditions.checkNotNull(minInclusive);
+		FuzzyPreconditions.checkNotNull(maxInclusive);
 
 		if(lt(maxInclusive, minInclusive) || minInclusive.equals(maxInclusive)) {
 			throw new IllegalArgumentException("minInclusive must be less than maxInclusive.");
@@ -41,14 +41,14 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	protected T getMin() { return min; }
 
 	public Case<T> lessThanOrEqualTo(T maxInclusive) {
-		Preconditions.checkNotNull(maxInclusive);
+		FuzzyPreconditions.checkNotNull(maxInclusive);
 		min = null;
 		max = maxInclusive;
 		return this;
 	}
 
 	public Case<T> greaterThanOrEqualTo(T minInclusive) {
-		Preconditions.checkNotNull(minInclusive);
+		FuzzyPreconditions.checkNotNull(minInclusive);
 		min = minInclusive;
 		max = null;
 		return this;
@@ -65,7 +65,7 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	}
 
 	public Case<T> greaterThanOrEqualTo(Generator<T> minInclusive) {
-		Preconditions.checkNotNull(minInclusive);
+		FuzzyPreconditions.checkNotNull(minInclusive);
 		return () -> Suppliers.pairwisePermutations(
 			Collections.<Function<Random, T>>singleton(random -> minInclusive.get()),
 			newCase().greaterThanOrEqualTo(i2t(1)).getSuppliers(),
@@ -74,7 +74,7 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	}
 
 	public Case<T> lessThanOrEqualTo(Generator<T> maxInclusive) {
-		Preconditions.checkNotNull(maxInclusive);
+		FuzzyPreconditions.checkNotNull(maxInclusive);
 		return () -> Suppliers.pairwisePermutations(
 			Collections.<Function<Random, T>>singleton(random -> maxInclusive.get()),
 			newCase().greaterThanOrEqualTo(i2t(1)).getSuppliers(),
@@ -83,7 +83,7 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	}
 
 	public WithinChain<T> within(T range) {
-		Preconditions.checkNotNull(range);
+		FuzzyPreconditions.checkNotNull(range);
 		if(lt(range, i2t(1)))
 			throw new IllegalArgumentException();
 
@@ -97,7 +97,7 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		private WithinChain(NumericCase<T> baseCase, T range) { this.baseCase = baseCase; this.range = range; }
 
 		public Case<T> butExcludingValueOf(Generator<T> number) {
-			Preconditions.checkNotNull(number);
+			FuzzyPreconditions.checkNotNull(number);
 			if(range.equals(baseCase.i2t(1))) {
 				return () -> Suppliers.pairwisePermutations(
 					Collections.<Function<Random, T>>singleton(random -> number.get()),
@@ -118,7 +118,7 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		}
 
 		public Case<T> of(Generator<T> number) {
-			Preconditions.checkNotNull(number);
+			FuzzyPreconditions.checkNotNull(number);
 
 			if(range.equals(baseCase.i2t(1))) {
 				return () -> Suppliers.pairwisePermutations(

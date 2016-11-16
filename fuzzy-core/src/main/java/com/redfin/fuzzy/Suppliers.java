@@ -16,8 +16,8 @@ public class Suppliers {
 		Set<Function<Random, INPUT>> suppliers,
 		Function<Function<Random, INPUT>, Function<Random, OUTPUT>> mapping
 	) {
-		Preconditions.checkNotNull(suppliers);
-		Preconditions.checkNotNull(mapping);
+		FuzzyPreconditions.checkNotNull(suppliers);
+		FuzzyPreconditions.checkNotNull(mapping);
 
 		Set<Function<Random, OUTPUT>> mapped = new HashSet<>(suppliers.size());
 		mapped.addAll(suppliers.stream().map(mapping).collect(Collectors.toList()));
@@ -29,8 +29,8 @@ public class Suppliers {
 		Set<Function<Random, INPUT>> suppliers,
 		BiFunction<Random, INPUT, OUTPUT> mapping
 	) {
-		Preconditions.checkNotNull(suppliers);
-		Preconditions.checkNotNull(mapping);
+		FuzzyPreconditions.checkNotNull(suppliers);
+		FuzzyPreconditions.checkNotNull(mapping);
 
 		Function<Function<Random, INPUT>, Function<Random, OUTPUT>> mapper =
 			s -> (r -> mapping.apply(r, s.apply(r)));
@@ -42,8 +42,8 @@ public class Suppliers {
 		Set<Function<Random, INPUT>> suppliers,
 		Function<INPUT, OUTPUT> mapping
 	) {
-		Preconditions.checkNotNull(suppliers);
-		Preconditions.checkNotNull(mapping);
+		FuzzyPreconditions.checkNotNull(suppliers);
+		FuzzyPreconditions.checkNotNull(mapping);
 
 		Function<Function<Random, INPUT>, Function<Random, OUTPUT>> mapper =
 			s -> (r -> mapping.apply(s.apply(r)));
@@ -60,9 +60,9 @@ public class Suppliers {
 		Set<Function<Random, U>> uSuppliers,
 		BiPermutedSupplierFunction<T, U, R> func
 	) {
-		Preconditions.checkNotNull(func);
-		Preconditions.checkNotNull(tSuppliers);
-		Preconditions.checkNotNull(uSuppliers);
+		FuzzyPreconditions.checkNotNull(func);
+		FuzzyPreconditions.checkNotNull(tSuppliers);
+		FuzzyPreconditions.checkNotNull(uSuppliers);
 
 		List<Set> options = new ArrayList<>();
 		options.add(tSuppliers);

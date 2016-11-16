@@ -1,6 +1,6 @@
 package com.redfin.fuzzy.pairwise;
 
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 	/*package*/ final List<ParamValue> values;
 
 	public Param(int id, List<Object> values) {
-		Preconditions.checkNotNullAndContainsNoNulls(values);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(values);
 
 		this.id = id;
 

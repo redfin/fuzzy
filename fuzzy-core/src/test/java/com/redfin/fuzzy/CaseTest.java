@@ -16,7 +16,7 @@ public class CaseTest {
 
 		Case<Integer> subject = c1.or(c2);
 
-		assertEquals(Util.setOf(1, 2), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf(1, 2), subject.generateAllOnce());
 	}
 
 	@Test
@@ -24,7 +24,7 @@ public class CaseTest {
 		Case<Integer> base = () -> Collections.singleton(r -> 1);
 		Case<Integer> subject = base.orNull();
 
-		assertEquals(Util.setOf(1, null), subject.generateAllOnce());
+		assertEquals(FuzzyUtil.setOf(1, null), subject.generateAllOnce());
 	}
 
 	@Test

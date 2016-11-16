@@ -3,7 +3,7 @@ package com.redfin.fuzzy.junit;
 import static org.junit.Assert.*;
 
 import com.redfin.fuzzy.Generator;
-import com.redfin.fuzzy.Util;
+import com.redfin.fuzzy.FuzzyUtil;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class FuzzyRuleTest {
 		).evaluate();
 
 		assertEquals(
-			Util.setOf("A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"),
+			FuzzyUtil.setOf("A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"),
 			actuals
 		);
 	}
@@ -93,7 +93,7 @@ public class FuzzyRuleTest {
 		catch(Exception e) {
 			// expected
 			assertEquals(
-				Util.setOf("A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"),
+				FuzzyUtil.setOf("A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"),
 				actuals
 			);
 		}

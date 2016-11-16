@@ -3,7 +3,7 @@ package com.redfin.fuzzy.cases;
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import com.redfin.fuzzy.Suppliers;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +25,7 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 	protected abstract COLLECTION createCollection(int expectedSize);
 
 	public CollectionCase<COLLECTION, ELEMENT> withSizeOf(Case<Integer> sizeCase) {
-		this.sizeCase = Preconditions.checkNotNull("sizeCase is required", sizeCase);
+		this.sizeCase = FuzzyPreconditions.checkNotNull("sizeCase is required", sizeCase);
 		return this;
 	}
 
@@ -38,14 +38,14 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 	}
 
 	public CollectionCase<COLLECTION, ELEMENT> withElementsOf(Case<ELEMENT> elementsCase) {
-		this.elementsCase = Preconditions.checkNotNull("elementsCase is required", elementsCase);
+		this.elementsCase = FuzzyPreconditions.checkNotNull("elementsCase is required", elementsCase);
 		return this;
 	}
 
 	public CollectionCase<COLLECTION, ELEMENT> withElementsOf(Supplier<Case<ELEMENT>> caseFunction) {
-		this.elementsCase = Preconditions.checkNotNull(
+		this.elementsCase = FuzzyPreconditions.checkNotNull(
 			"The caseFunction supplier returned a null case.",
-			Preconditions.checkNotNull("caseFunction is required", caseFunction).get()
+			FuzzyPreconditions.checkNotNull("caseFunction is required", caseFunction).get()
 		);
 		return this;
 	}
@@ -95,7 +95,7 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 			for(int i = 0; i < supplierCount; i++) {
 				suppliers.add(new CollectionSupplier<>(
 					this::createCollection,
-					Preconditions.checkNotNull(
+					FuzzyPreconditions.checkNotNull(
 						String.format(
 							"Collection case's size case of type %s returned an illegal null supplier",
 							sizeCase.getClass()
@@ -142,7 +142,7 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 			D result = collectionCreator.apply(size);
 			for(int i = 0; i < size; i++) {
 				int j = elementSelector.getAndIncrement() % elementSuppliers.size();
-				result.add(Preconditions.checkNotNull(
+				result.add(FuzzyPreconditions.checkNotNull(
 					"Case for collection elements returned an illegal null supplier.",
 					elementSuppliers.get(j)
 				).apply(random));

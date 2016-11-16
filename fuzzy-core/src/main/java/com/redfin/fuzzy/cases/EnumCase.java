@@ -1,7 +1,7 @@
 package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Case;
-import com.redfin.fuzzy.Preconditions;
+import com.redfin.fuzzy.FuzzyPreconditions;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ public class EnumCase<T extends Enum> implements Case<T> {
 	private final Set<T> excluded = new HashSet<>();
 
 	public EnumCase(Class<T> enumClass) {
-		this.enumClass = Preconditions.checkNotNull(enumClass);
+		this.enumClass = FuzzyPreconditions.checkNotNull(enumClass);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.redfin.fuzzy.Util;
+import com.redfin.fuzzy.FuzzyUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,7 +19,7 @@ public class PairwiseTest {
 	@Test
 	public void testGeneratePairsSingleVariable() {
 		Pairwise pw = new Pairwise<>(Collections.singletonList(
-			Util.setOf("A", "B", "C")
+			FuzzyUtil.setOf("A", "B", "C")
 		));
 		PairSet ps = pw.generatePairs();
 		assertEquals(0, ps.size());
@@ -29,9 +29,9 @@ public class PairwiseTest {
 	public void testGeneratePairsBasicCase() {
 
 		Pairwise pw = new Pairwise<>(Arrays.asList(
-			Util.setOf("A", "B", "C"),
-			Util.setOf("d", "e", "f", "g"),
-			Util.setOf("1", "2", "3")
+			FuzzyUtil.setOf("A", "B", "C"),
+			FuzzyUtil.setOf("d", "e", "f", "g"),
+			FuzzyUtil.setOf("1", "2", "3")
 		));
 
 		PairSet ps = pw.generatePairs();
@@ -61,7 +61,7 @@ public class PairwiseTest {
 	@Test
 	public void testGenerateSingleVariable() {
 		Pairwise<?> pw = new Pairwise<>(Collections.singletonList(
-			Util.setOf("A", "B", "C")
+			FuzzyUtil.setOf("A", "B", "C")
 		));
 
 		Stack<List<Object>> testCases = pw.generate();
@@ -73,16 +73,16 @@ public class PairwiseTest {
 			actuals.add((String)testCase.get(0));
 		}
 
-		assertEquals(Util.setOf("A", "B", "C"), actuals);
+		assertEquals(FuzzyUtil.setOf("A", "B", "C"), actuals);
 	}
 
 	@Test
 	public void testGenerateBasicCase() {
 
-		Set<String> p1 = Util.setOf("A", "B", "C");
-		Set<String> p2 = Util.setOf("d", "e", "f", "g");
-		Set<String> p3 = Util.setOf("1", "2", "3");
-		Set<String> p4 = Util.setOf("X", "O");
+		Set<String> p1 = FuzzyUtil.setOf("A", "B", "C");
+		Set<String> p2 = FuzzyUtil.setOf("d", "e", "f", "g");
+		Set<String> p3 = FuzzyUtil.setOf("1", "2", "3");
+		Set<String> p4 = FuzzyUtil.setOf("X", "O");
 
 		int combinations = (3 * 9) + (4 * 5) + (3 * 2);
 
@@ -142,16 +142,16 @@ public class PairwiseTest {
 	@Test
 	public void benchmark() {
 		List<Set> params = Arrays.asList( // 4400 combinations
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-			Util.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+			FuzzyUtil.setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 		);
 
 		int[] sizes = new int[50];

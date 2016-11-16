@@ -3,7 +3,7 @@ package com.redfin.fuzzy.cases;
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Context;
 import com.redfin.fuzzy.Generator;
-import com.redfin.fuzzy.Util;
+import com.redfin.fuzzy.FuzzyUtil;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -29,7 +29,7 @@ public class EnumCaseTest {
 		Context.cleanUp();
 
 		assertEquals(4, count);
-		assertEquals(Util.setOf(TestEnum.A, TestEnum.B, TestEnum.C, TestEnum.D), actual);
+		assertEquals(FuzzyUtil.setOf(TestEnum.A, TestEnum.B, TestEnum.C, TestEnum.D), actual);
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class EnumCaseTest {
 		Context.cleanUp();
 
 		assertEquals(2, count);
-		assertEquals(Util.setOf(TestEnum.A, TestEnum.D), actual);
+		assertEquals(FuzzyUtil.setOf(TestEnum.A, TestEnum.D), actual);
 	}
 
 	@Test(expected = IllegalStateException.class)

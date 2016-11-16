@@ -24,7 +24,7 @@ public interface Case<T>
 	default T generateAnyOnce() { return generateAnyOnce(new Random()); }
 
 	default T generateAnyOnce(Random random) {
-		Preconditions.checkNotNull(random);
+		FuzzyPreconditions.checkNotNull(random);
 
 		Set<Function<Random, T>> suppliers = getSuppliers();
 
@@ -37,7 +37,7 @@ public interface Case<T>
 	default Set<T> generateAllOnce() { return generateAllOnce(new Random()); }
 
 	default Set<T> generateAllOnce(Random random) {
-		Preconditions.checkNotNull(random);
+		FuzzyPreconditions.checkNotNull(random);
 
 		Set<Function<Random, T>> suppliers = getSuppliers();
 

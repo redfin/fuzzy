@@ -3,7 +3,7 @@ package com.redfin.fuzzy.cases;
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.Util;
+import com.redfin.fuzzy.FuzzyUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -113,10 +113,10 @@ public class StringCaseTest {
 
 		for(String actual : actuals) {
 			assertEquals(5, actual.length());
-			if(allCharsAreFrom(actual, Util.toCharSet("ABC"))) {
+			if(allCharsAreFrom(actual, FuzzyUtil.toCharSet("ABC"))) {
 				foundLetters = true;
 			}
-			else if(allCharsAreFrom(actual, Util.toCharSet("123"))) {
+			else if(allCharsAreFrom(actual, FuzzyUtil.toCharSet("123"))) {
 				foundNumbers = true;
 			}
 		}
@@ -133,7 +133,7 @@ public class StringCaseTest {
 		assertEquals(1, suppliers.size());
 		assertAllSuppliers(
 			suppliers,
-			s -> allCharsAreFrom(s, Util.toCharSet("ABC"))
+			s -> allCharsAreFrom(s, FuzzyUtil.toCharSet("ABC"))
 		);
 	}
 
@@ -169,7 +169,7 @@ public class StringCaseTest {
 		assertEquals(1, suppliers.size());
 		assertAllSuppliers(
 			suppliers,
-			s -> allCharsAreFrom(s, Util.union(StringCase.ALPHABET_CHARS, StringCase.DIGIT_CHARS))
+			s -> allCharsAreFrom(s, FuzzyUtil.union(StringCase.ALPHABET_CHARS, StringCase.DIGIT_CHARS))
 		);
 	}
 

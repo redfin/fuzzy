@@ -92,7 +92,7 @@ public class Context {
 			Iteration i = variable.getValue();
 			if(i.generated) {
 				sb.append("  ");
-				Util.inspectTo(sb, i.getCurrent());
+				FuzzyUtil.inspectTo(sb, i.getCurrent());
 				sb.append(" from generator ");
 				sb.append(variable.getKey().getName());
 				sb.append('\n');
@@ -113,8 +113,8 @@ public class Context {
 	private Stack<Map<Generator, Iteration>> iterations;
 
 	/*package*/ <T> void register(Generator<T> generator, Case<?>[] cases) {
-		Preconditions.checkNotNull(generator);
-		Preconditions.checkNotNullAndContainsNoNulls(cases);
+		FuzzyPreconditions.checkNotNull(generator);
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(cases);
 
 		if(locked) {
 			throw newAlreadyLockedException();
