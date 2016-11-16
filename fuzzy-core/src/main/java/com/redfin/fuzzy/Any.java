@@ -73,6 +73,8 @@ public class Any {
 	public static Case<Float> positiveNonZeroSinglePrecisionNumber() { return new FloatNumericCase().greaterThan(0); }
 	public static Case<Float> negativeSinglePrecisionNumber() { return new FloatNumericCase().lessThan(0); }
 
+	public static Case<Boolean> bool() { return Any.of(true, false); }
+
 	public static StringCase string() { return new StringCase(); }
 
 	public static <T extends Enum> EnumCase<T> enumValueFrom(Class<T> enumClass) { return new EnumCase<>(enumClass); }

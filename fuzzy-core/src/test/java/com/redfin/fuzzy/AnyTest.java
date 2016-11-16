@@ -191,6 +191,12 @@ public class AnyTest {
 	}
 
 	@Test
+	public void testAnyBool() {
+		Set<Boolean> actuals = Any.bool().generateAllOnce();
+		assertEquals(Util.setOf(true, false), actuals);
+	}
+
+	@Test
 	public void testConstructorForCoverage() {
 		new Any();
 	}
