@@ -1,5 +1,6 @@
 package com.redfin.fuzzy;
 
+import com.redfin.fuzzy.cases.CollectionCase;
 import com.redfin.fuzzy.cases.DoubleNumericCase;
 import com.redfin.fuzzy.cases.EnumCase;
 import com.redfin.fuzzy.cases.FloatNumericCase;
@@ -8,7 +9,11 @@ import com.redfin.fuzzy.cases.NumericCase;
 import com.redfin.fuzzy.cases.StringCase;
 import com.redfin.fuzzy.cases.UnionCase;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -71,5 +76,53 @@ public class Any {
 	public static StringCase string() { return new StringCase(); }
 
 	public static <T extends Enum> EnumCase<T> enumValueFrom(Class<T> enumClass) { return new EnumCase<>(enumClass); }
+
+	@SafeVarargs
+	public static <T> CollectionCase<List<T>, T> listOf(Case<T>... cases) {
+		return new CollectionCase.ListCase<T>().withElementsOf(new UnionCase<>(cases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<List<T>, T> nonemptyListOf(Case<T>... cases) {
+		return new CollectionCase.ListCase<T>()
+			.withSizeOf(Any.integer().inRange(1, 100))
+			.withElementsOf(new UnionCase<>(cases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<List<T>, T> listOf(Supplier<Case<T>>... delegateCases) {
+		return new CollectionCase.ListCase<T>().withElementsOf(Cases.ofDelegates(delegateCases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<List<T>, T> nonemptyListOf(Supplier<Case<T>>... delegateCases) {
+		return new CollectionCase.ListCase<T>()
+			.withSizeOf(Any.integer().inRange(1, 100))
+			.withElementsOf(Cases.ofDelegates(delegateCases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<Set<T>, T> setOf(Case<T>... cases) {
+		return new CollectionCase.SetCase<T>().withElementsOf(new UnionCase<>(cases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<Set<T>, T> nonemptySetOf(Case<T>... cases) {
+		return new CollectionCase.SetCase<T>()
+			.withSizeOf(Any.integer().inRange(1, 100))
+			.withElementsOf(new UnionCase<>(cases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<Set<T>, T> setOf(Supplier<Case<T>>... delegateCases) {
+		return new CollectionCase.SetCase<T>().withElementsOf(Cases.ofDelegates(delegateCases));
+	}
+
+	@SafeVarargs
+	public static <T> CollectionCase<Set<T>, T> nonemptySetOf(Supplier<Case<T>>... delegateCases) {
+		return new CollectionCase.SetCase<T>()
+			.withSizeOf(Any.integer().inRange(1, 100))
+			.withElementsOf(Cases.ofDelegates(delegateCases));
+	}
 
 }

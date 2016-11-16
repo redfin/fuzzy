@@ -40,6 +40,18 @@ public class Cases {
 		return () -> suppliersSet;
 	}
 
+	@SafeVarargs
+	public static <T> Case<T> ofDelegates(Supplier<Case<T>>... delegateCases) {
+		Preconditions.checkNotNullAndContainsNoNulls(delegateCases);
+
+		Set<Function<Random, T>> suppliers = new HashSet<>();
+		for(Supplier<Case<T>> delegate : delegateCases) {
+			suppliers.addAll(delegate.get().getSuppliers());
+		}
+
+		return () -> suppliers;
+	}
+
 	public static <T, U> Case<U> map(Case<T> original, Function<T, U> mapping) {
 		Preconditions.checkNotNull(original);
 		Preconditions.checkNotNull(mapping);

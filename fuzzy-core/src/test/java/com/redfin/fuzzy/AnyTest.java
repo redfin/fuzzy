@@ -1,5 +1,6 @@
 package com.redfin.fuzzy;
 
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -157,6 +158,36 @@ public class AnyTest {
 	public void testNegativeSinglePrecisionNumber() {
 		Set<Float> floats = Any.negativeSinglePrecisionNumber().generateAllOnce(random);
 		assertFalse(floats.stream().anyMatch(f -> f >= 0));
+	}
+
+	@Test
+	public void testNonEmptyListOf() {
+		Set<List<Integer>> actuals = Any.nonemptyListOf(Any.integer()).generateAllOnce(random);
+		assertFalse(actuals.stream().anyMatch(List::isEmpty));
+	}
+
+	@Test
+	public void testNonEmptyListOfDelegates() {
+		Set<List<Integer>> actuals = Any.nonemptyListOf(Any::integer).generateAllOnce(random);
+		assertFalse(actuals.stream().anyMatch(List::isEmpty));
+	}
+
+	@Test
+	public void testSetOfDelegates() {
+		Set<Set<Integer>> actuals = Any.setOf(Any::positiveNonZeroInteger).generateAllOnce(random);
+		assertFalse(actuals.stream().anyMatch(s -> s.stream().anyMatch(i -> i <= 0)));
+	}
+
+	@Test
+	public void testNonEmptySetOf() {
+		Set<Set<Integer>> actuals = Any.nonemptySetOf(Any.integer()).generateAllOnce(random);
+		assertFalse(actuals.stream().anyMatch(Set::isEmpty));
+	}
+
+	@Test
+	public void testNonEmptySetOfDelegates() {
+		Set<Set<Integer>> actuals = Any.nonemptySetOf(Any::integer).generateAllOnce(random);
+		assertFalse(actuals.stream().anyMatch(Set::isEmpty));
 	}
 
 	@Test
