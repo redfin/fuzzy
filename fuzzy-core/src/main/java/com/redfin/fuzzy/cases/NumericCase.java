@@ -2,16 +2,15 @@ package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.FuzzyPreconditions;
 import com.redfin.fuzzy.Generator;
 import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.FuzzyPreconditions;
-import com.redfin.fuzzy.Suppliers;
-
+import com.redfin.fuzzy.Subcase;
+import com.redfin.fuzzy.Subcases;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class NumericCase<T extends Number> implements Case<T> {
@@ -66,18 +65,18 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 
 	public Case<T> greaterThanOrEqualTo(Generator<T> minInclusive) {
 		FuzzyPreconditions.checkNotNull(minInclusive);
-		return () -> Suppliers.pairwisePermutations(
-			Collections.<Function<Random, T>>singleton(random -> minInclusive.get()),
-			newCase().greaterThanOrEqualTo(i2t(1)).getSuppliers(),
+		return () -> Subcases.pairwisePermutations(
+			Collections.<Subcase<T>>singleton(random -> minInclusive.get()),
+			newCase().greaterThanOrEqualTo(i2t(1)).getSubcases(),
 			(random, base, distance) -> add(base, distance)
 		);
 	}
 
 	public Case<T> lessThanOrEqualTo(Generator<T> maxInclusive) {
 		FuzzyPreconditions.checkNotNull(maxInclusive);
-		return () -> Suppliers.pairwisePermutations(
-			Collections.<Function<Random, T>>singleton(random -> maxInclusive.get()),
-			newCase().greaterThanOrEqualTo(i2t(1)).getSuppliers(),
+		return () -> Subcases.pairwisePermutations(
+			Collections.<Subcase<T>>singleton(random -> maxInclusive.get()),
+			newCase().greaterThanOrEqualTo(i2t(1)).getSubcases(),
 			(random, base, distance) -> add(base, negate(distance))
 		);
 	}
@@ -99,19 +98,19 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 		public Case<T> butExcludingValueOf(Generator<T> number) {
 			FuzzyPreconditions.checkNotNull(number);
 			if(range.equals(baseCase.i2t(1))) {
-				return () -> Suppliers.pairwisePermutations(
-					Collections.<Function<Random, T>>singleton(random -> number.get()),
-					Any.of(-1, 1).getSuppliers(),
+				return () -> Subcases.pairwisePermutations(
+					Collections.<Subcase<T>>singleton(random -> number.get()),
+					Any.of(-1, 1).getSubcases(),
 					(random, base, distance) -> baseCase.add(base, baseCase.i2t(distance))
 				);
 			}
 			else {
-				return () -> Suppliers.pairwisePermutations(
-					Collections.<Function<Random, T>>singleton(random -> number.get()),
+				return () -> Subcases.pairwisePermutations(
+					Collections.<Subcase<T>>singleton(random -> number.get()),
 					Any.of(
 						baseCase.newCase().inRange(baseCase.negate(range), baseCase.i2t(-1)),
 						baseCase.newCase().inRange(baseCase.i2t(1), range)
-					).getSuppliers(),
+					).getSubcases(),
 					(random, base, distance) -> baseCase.add(base, distance)
 				);
 			}
@@ -121,30 +120,30 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			FuzzyPreconditions.checkNotNull(number);
 
 			if(range.equals(baseCase.i2t(1))) {
-				return () -> Suppliers.pairwisePermutations(
-					Collections.<Function<Random, T>>singleton(random -> number.get()),
-					Any.of(-1, 0, 1).getSuppliers(),
+				return () -> Subcases.pairwisePermutations(
+					Collections.<Subcase<T>>singleton(random -> number.get()),
+					Any.of(-1, 0, 1).getSubcases(),
 					(random, base, distance) -> baseCase.add(base, baseCase.i2t(distance))
 				);
 			}
 			else {
-				return () -> Suppliers.pairwisePermutations(
-					Collections.<Function<Random, T>>singleton(random -> number.get()),
+				return () -> Subcases.pairwisePermutations(
+					Collections.<Subcase<T>>singleton(random -> number.get()),
 					Any.of(
 						baseCase.newCase().inRange(baseCase.negate(range), baseCase.i2t(-1)),
 						Literal.value(baseCase.i2t(0)),
 						baseCase.newCase().inRange(baseCase.i2t(1), range)
-					).getSuppliers(),
+					).getSubcases(),
 					(random, base, distance) -> baseCase.add(base, distance)
 				);
 			}
 		}
 	}
 
-	private Function<Random, T> exclude(Function<Random, T> supplier) {
+	private Subcase<T> exclude(Subcase<T> subcase) {
 		return r -> {
 			for(int i = 0; i < MAX_ATTEMPTS; i++) {
-				T t = supplier.apply(r);
+				T t = subcase.generate(r);
 				if(!excluded.contains(t)) return t;
 			}
 			throw new IllegalStateException("Numeric case could not generate a value that was not marked as excluded.");
@@ -152,37 +151,37 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	}
 
 	@Override
-	public Set<Function<Random, T>> getSuppliers() {
-		Set<Function<Random, T>> suppliers = new HashSet<>(3);
+	public Set<Subcase<T>> getSubcases() {
+		Set<Subcase<T>> subcases = new HashSet<>(3);
 		final T zero = i2t(0);
 
 		// Negative
 		if(min != null && max != null && lt(max, zero)) {
 			final T d = add(max, negate(min));
-			suppliers.add(r -> add(min, rngLessThan(r, d)));
+			subcases.add(r -> add(min, rngLessThan(r, d)));
 		}
 		else if(min == null || lt(min, zero)) {
 			if(min == null) {
-				suppliers.add(r -> negate(abs(rng(r))));
+				subcases.add(r -> negate(abs(rng(r))));
 			}
 			else {
 				final T max = negate(min);
-				suppliers.add(r -> negate(rngLessThan(r, max)));
+				subcases.add(r -> negate(rngLessThan(r, max)));
 			}
 		}
 
 		// Positive
 		if(max != null && min != null && lt(zero, min)) {
 			final T d = add(max, negate(min));
-			suppliers.add(r -> add(min, rngLessThan(r, d)));
+			subcases.add(r -> add(min, rngLessThan(r, d)));
 		}
 		else if(max == null || lt(zero, max)) {
 			if(max == null) {
-				suppliers.add(r -> abs(rng(r)));
+				subcases.add(r -> abs(rng(r)));
 			}
 			else {
 				final T max = this.max;
-				suppliers.add(r -> rngLessThan(r, max));
+				subcases.add(r -> rngLessThan(r, max));
 			}
 		}
 
@@ -192,17 +191,17 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			(max == null || lt(zero, max) || zero.equals(max)) &&
 			!excluded.contains(zero)
 		) {
-			suppliers.add(r -> zero);
+			subcases.add(r -> zero);
 		}
 
 		// Cover the specific boundaries
-		if(min != null && !min.equals(zero) && !excluded.contains(min)) suppliers.add(r -> min);
-		if(max != null && !max.equals(zero) && !excluded.contains(max)) suppliers.add(r -> max);
+		if(min != null && !min.equals(zero) && !excluded.contains(min)) subcases.add(r -> min);
+		if(max != null && !max.equals(zero) && !excluded.contains(max)) subcases.add(r -> max);
 
 		// Let the subclass add additional cases if it wants to.
-		addAdditionalSuppliers(suppliers);
+		addAdditionalSubcases(subcases);
 
-		return suppliers.stream().map(this::exclude).collect(Collectors.toSet());
+		return subcases.stream().map(this::exclude).collect(Collectors.toSet());
 	}
 
 	protected abstract NumericCase<T> newCase();
@@ -216,7 +215,7 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 	protected abstract T rng(Random random);
 	protected abstract T rngLessThan(Random random, T maxInclusive);
 
-	protected void addAdditionalSuppliers(Set<Function<Random, T>> suppliers) {}
+	protected void addAdditionalSubcases(Set<Subcase<T>> subcases) {}
 
 	public static NumericCase<Byte> ofBytes() {
 		return new NumericCase<Byte>() {
@@ -333,23 +332,23 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			}
 
 			@Override
-			protected void addAdditionalSuppliers(Set<Function<Random, Long>> suppliers) {
+			protected void addAdditionalSubcases(Set<Subcase<Long>> subcases) {
 				// If supported by their bounds, make sure to add negative and positive cases for values larger
 				// than regular integers can handle.
 				if(getMin() == null) {
-					suppliers.add(r -> (long)Integer.MIN_VALUE - (1L + (r.nextInt() & 0x3FFFFFFFL)));
+					subcases.add(r -> (long)Integer.MIN_VALUE - (1L + (r.nextInt() & 0x3FFFFFFFL)));
 				}
 				else if(getMin() < Integer.MIN_VALUE) {
 					final int d = (int)(Integer.MIN_VALUE - getMin()) - 1;
-					suppliers.add(r -> (long)Integer.MIN_VALUE - (1L + r.nextInt(d)));
+					subcases.add(r -> (long)Integer.MIN_VALUE - (1L + r.nextInt(d)));
 				}
 
 				if(getMax() == null) {
-					suppliers.add(r -> (long)Integer.MAX_VALUE + 1L + (r.nextInt() & 0x3FFFFFFFL));
+					subcases.add(r -> (long)Integer.MAX_VALUE + 1L + (r.nextInt() & 0x3FFFFFFFL));
 				}
 				else if(getMax() > Integer.MAX_VALUE) {
 					final int d = (int)(getMax() - Integer.MAX_VALUE) - 1;
-					suppliers.add(r -> (long)Integer.MAX_VALUE + 1L + r.nextInt(d));
+					subcases.add(r -> (long)Integer.MAX_VALUE + 1L + r.nextInt(d));
 				}
 			}
 		};

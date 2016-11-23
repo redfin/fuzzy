@@ -1,22 +1,21 @@
 package com.redfin.fuzzy.cases;
 
-import com.redfin.fuzzy.Any;
-import com.redfin.fuzzy.Case;
-import com.redfin.fuzzy.Literal;
-import com.redfin.fuzzy.FuzzyUtil;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import com.redfin.fuzzy.Any;
+import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.FuzzyUtil;
+import com.redfin.fuzzy.Literal;
+import com.redfin.fuzzy.Subcase;
+import java.util.Collections;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StringCaseTest {
 
@@ -30,13 +29,13 @@ public class StringCaseTest {
 	@Test
 	public void testDefaultConfig() {
 		Case<String> subject = Any.string();
-		Set<Function<Random, String>> suppliers = subject.getSuppliers();
+		Set<Subcase<String>> subcases = subject.getSubcases();
 
 		boolean foundStandard, foundWhitespace, foundUnicode, foundEmoji, foundInjection, foundEmpty;
 		foundStandard = foundWhitespace = foundUnicode = foundEmoji = foundInjection = foundEmpty = false;
 
-		for(Function<Random, String> supplier : suppliers) {
-			String s = supplier.apply(random);
+		for(Subcase<String> subcase : subcases) {
+			String s = subcase.generate(random);
 
 			if("".equals(s)) {
 				foundEmpty = true;
@@ -69,13 +68,13 @@ public class StringCaseTest {
 	@Test
 	public void testWithLengthOf() {
 		Case<String> subject = Any.string().withLengthOf(Literal.value(10));
-		assertAllSuppliers(subject.getSuppliers(), s -> s.length() == 10);
+		assertAllSubcases(subject.getSubcases(), s -> s.length() == 10);
 	}
 
 	@Test
 	public void testWithLength() {
 		Case<String> subject = Any.string().withLength(20);
-		assertAllSuppliers(subject.getSuppliers(), s -> s.length() == 20);
+		assertAllSubcases(subject.getSubcases(), s -> s.length() == 20);
 	}
 
 	@Test
@@ -84,7 +83,7 @@ public class StringCaseTest {
 			.withSourceStringsOf(Literal.value(Collections.singleton("HELLO")))
 			.withLength(5);
 
-		assertAllSuppliers(subject.getSuppliers(), "HELLO"::equals);
+		assertAllSubcases(subject.getSubcases(), "HELLO"::equals);
 	}
 
 	@Test
@@ -93,7 +92,7 @@ public class StringCaseTest {
 			.withSourceStrings("HELLO")
 			.withLength(5);
 
-		assertAllSuppliers(subject.getSuppliers(), "HELLO"::equals);
+		assertAllSubcases(subject.getSubcases(), "HELLO"::equals);
 	}
 
 	@Test
@@ -102,8 +101,8 @@ public class StringCaseTest {
 			.withSourceCharsOf(Any.of(Literal.value("ABC"), Literal.value("123")))
 			.withLength(5);
 
-		Set<String> actuals = subject.getSuppliers().stream()
-			.map(f -> f.apply(random))
+		Set<String> actuals = subject.getSubcases().stream()
+			.map(f -> f.generate(random))
 			.collect(Collectors.toSet());
 
 		boolean foundLetters, foundNumbers;
@@ -128,11 +127,11 @@ public class StringCaseTest {
 	@Test
 	public void testWithSourceChars() {
 		Case<String> subject = Any.string().withSourceChars("ABC").withLength(100);
-		Set<Function<Random, String>> suppliers = subject.getSuppliers();
+		Set<Subcase<String>> subcases = subject.getSubcases();
 
-		assertEquals(1, suppliers.size());
-		assertAllSuppliers(
-			suppliers,
+		assertEquals(1, subcases.size());
+		assertAllSubcases(
+			subcases,
 			s -> allCharsAreFrom(s, FuzzyUtil.toCharSet("ABC"))
 		);
 	}
@@ -140,11 +139,11 @@ public class StringCaseTest {
 	@Test
 	public void testWithOnlyAlphabetChars() {
 		Case<String> subject = Any.string().withOnlyAlphabetChars().withLength(100);
-		Set<Function<Random, String>> suppliers = subject.getSuppliers();
+		Set<Subcase<String>> subcases = subject.getSubcases();
 
-		assertEquals(1, suppliers.size());
-		assertAllSuppliers(
-			suppliers,
+		assertEquals(1, subcases.size());
+		assertAllSubcases(
+			subcases,
 			s -> allCharsAreFrom(s, StringCase.ALPHABET_CHARS)
 		);
 	}
@@ -152,11 +151,11 @@ public class StringCaseTest {
 	@Test
 	public void testWithOnlyDigitChars() {
 		Case<String> subject = Any.string().withOnlyDigitChars().withLength(100);
-		Set<Function<Random, String>> suppliers = subject.getSuppliers();
+		Set<Subcase<String>> subcases = subject.getSubcases();
 
-		assertEquals(1, suppliers.size());
-		assertAllSuppliers(
-			suppliers,
+		assertEquals(1, subcases.size());
+		assertAllSubcases(
+			subcases,
 			s -> allCharsAreFrom(s, StringCase.DIGIT_CHARS)
 		);
 	}
@@ -164,11 +163,11 @@ public class StringCaseTest {
 	@Test
 	public void testWithOnlyAlphanumericChars() {
 		Case<String> subject = Any.string().withOnlyAlphanumericChars().withLength(100);
-		Set<Function<Random, String>> suppliers = subject.getSuppliers();
+		Set<Subcase<String>> subcases = subject.getSubcases();
 
-		assertEquals(1, suppliers.size());
-		assertAllSuppliers(
-			suppliers,
+		assertEquals(1, subcases.size());
+		assertAllSubcases(
+			subcases,
 			s -> allCharsAreFrom(s, FuzzyUtil.union(StringCase.ALPHABET_CHARS, StringCase.DIGIT_CHARS))
 		);
 	}
@@ -176,11 +175,11 @@ public class StringCaseTest {
 	@Test
 	public void testWithOnlyHexChars() {
 		Case<String> subject = Any.string().withOnlyHexChars().withLength(100);
-		Set<Function<Random, String>> suppliers = subject.getSuppliers();
+		Set<Subcase<String>> subcases = subject.getSubcases();
 
-		assertEquals(1, suppliers.size());
-		assertAllSuppliers(
-			suppliers,
+		assertEquals(1, subcases.size());
+		assertAllSubcases(
+			subcases,
 			s -> allCharsAreFrom(s, StringCase.HEX_CHARS)
 		);
 	}
@@ -188,25 +187,25 @@ public class StringCaseTest {
 	@Test
 	public void testHandlesNullLengthGracefully() {
 		Case<String> subject = Any.string().withLengthOf(Literal.nil());
-		assertAllSuppliers(subject.getSuppliers(), ""::equals);
+		assertAllSubcases(subject.getSubcases(), ""::equals);
 	}
 
 	@Test
 	public void testHandlesLongLengthGracefully() {
 		Case<String> subject = Any.string().withLengthOf(Literal.value(5000));
-		assertAllSuppliers(subject.getSuppliers(), s -> s.length() == 1024);
+		assertAllSubcases(subject.getSubcases(), s -> s.length() == 1024);
 	}
 
 	@Test
 	public void testHandlesNegativeLengthGracefully() {
 		Case<String> subject = Any.string().withLengthOf(Literal.value(-5000));
-		assertAllSuppliers(subject.getSuppliers(), ""::equals);
+		assertAllSubcases(subject.getSubcases(), ""::equals);
 	}
 
 	@Test
 	public void testHandlesNullSourceStringsGracefully() {
 		Case<String> subject = Any.string().withSourceStringsOf(Literal.nil()).withLength(5);
-		assertAllSuppliers(subject.getSuppliers(), "XXXXX"::equals);
+		assertAllSubcases(subject.getSubcases(), "XXXXX"::equals);
 	}
 
 	@Test
@@ -215,7 +214,7 @@ public class StringCaseTest {
 			.withSourceStringsOf(Literal.value(Collections.emptySet()))
 			.withLength(5);
 
-		assertAllSuppliers(subject.getSuppliers(), "XXXXX"::equals);
+		assertAllSubcases(subject.getSubcases(), "XXXXX"::equals);
 	}
 
 	@Test
@@ -224,7 +223,7 @@ public class StringCaseTest {
 			.withSourceStringsOf(Literal.value(Collections.singleton("")))
 			.withLength(5);
 
-		assertAllSuppliers(subject.getSuppliers(), "XXXXX"::equals);
+		assertAllSubcases(subject.getSubcases(), "XXXXX"::equals);
 	}
 
 	@Test
@@ -258,9 +257,9 @@ public class StringCaseTest {
 		return true;
 	}
 
-	private void assertAllSuppliers(Set<Function<Random, String>> suppliers, Predicate<String> predicate) {
-		for(Function<Random, String> supplier : suppliers) {
-			String s = supplier.apply(random);
+	private void assertAllSubcases(Set<Subcase<String>> subcases, Predicate<String> predicate) {
+		for(Subcase<String> subcase : subcases) {
+			String s = subcase.generate(random);
 			assertTrue("Expected predicate to hold for string {" + s + "}", predicate.test(s));
 		}
 	}

@@ -1,21 +1,5 @@
 package com.redfin.fuzzy.cases;
 
-import com.redfin.fuzzy.Any;
-import com.redfin.fuzzy.Case;
-import com.redfin.fuzzy.Context;
-import com.redfin.fuzzy.Generator;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -24,6 +8,21 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import com.redfin.fuzzy.Any;
+import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.Context;
+import com.redfin.fuzzy.Generator;
+import com.redfin.fuzzy.Subcase;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NumericCaseTest {
 
@@ -49,10 +48,10 @@ public class NumericCaseTest {
 	@Test
 	public void testDefaultConfig() {
 		Case<Integer> subject = Any.integer();
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(3, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(3, subcases.size());
+		assertSubcases(subcases)
 			.expectNegative()
 			.expectPositive()
 			.expectZero()
@@ -62,10 +61,10 @@ public class NumericCaseTest {
 	@Test
 	public void testLessThanPositive() {
 		Case<Integer> subject = Any.integer().lessThanOrEqualTo(10);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(4, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(4, subcases.size());
+		assertSubcases(subcases)
 			.expectNegative()
 			.expectPositive()
 			.expectZero()
@@ -77,10 +76,10 @@ public class NumericCaseTest {
 	@Test
 	public void testLessThanZero() {
 		Case<Integer> subject = Any.integer().lessThanOrEqualTo(0);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(2, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(2, subcases.size());
+		assertSubcases(subcases)
 			.expectNegative()
 			.expectZero()
 			.expectNoPositive()
@@ -90,10 +89,10 @@ public class NumericCaseTest {
 	@Test
 	public void testLessThanNegative() {
 		Case<Integer> subject = Any.integer().lessThanOrEqualTo(-1000000000);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(2, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(2, subcases.size());
+		assertSubcases(subcases)
 			.expectNegative()
 			.expectNoZero()
 			.expectNoPositive()
@@ -105,10 +104,10 @@ public class NumericCaseTest {
 	@Test
 	public void testGreaterThanPositive() {
 		Case<Integer> subject = Any.integer().greaterThanOrEqualTo(1000000000);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(2, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(2, subcases.size());
+		assertSubcases(subcases)
 			.expectNoNegative()
 			.expectNoZero()
 			.expectPositive()
@@ -120,10 +119,10 @@ public class NumericCaseTest {
 	@Test
 	public void testGreaterThanZero() {
 		Case<Integer> subject = Any.integer().greaterThanOrEqualTo(0);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(2, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(2, subcases.size());
+		assertSubcases(subcases)
 			.expectNoNegative()
 			.expectZero()
 			.expectPositive()
@@ -133,10 +132,10 @@ public class NumericCaseTest {
 	@Test
 	public void testGreaterThanNegative() {
 		Case<Integer> subject = Any.integer().greaterThanOrEqualTo(-10);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(4, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(4, subcases.size());
+		assertSubcases(subcases)
 			.expectNegative()
 			.expectZero()
 			.expectPositive()
@@ -148,10 +147,10 @@ public class NumericCaseTest {
 	@Test
 	public void testInRangeStraddleZero() {
 		Case<Integer> subject = Any.integer().inRange(-10, 10);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(5, suppliers.size());
-		assertSuppliers(suppliers)
+		assertEquals(5, subcases.size());
+		assertSubcases(subcases)
 			.expectNegative()
 			.expectZero()
 			.expectPositive()
@@ -165,10 +164,10 @@ public class NumericCaseTest {
 	@Test
 	public void testInRangeFullyPositive() {
 		Case<Integer> subject = Any.integer().inRange(1000, 1010);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		List<Integer> actual = suppliers.stream()
-			.map(s -> s.apply(random))
+		List<Integer> actual = subcases.stream()
+			.map(s -> s.generate(random))
 			.sorted()
 			.collect(Collectors.toList());
 
@@ -184,10 +183,10 @@ public class NumericCaseTest {
 	@Test
 	public void testInRangeFullyNegative() {
 		Case<Integer> subject = Any.integer().inRange(-1010, -1000);
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		List<Integer> actual = suppliers.stream()
-			.map(s -> s.apply(random))
+		List<Integer> actual = subcases.stream()
+			.map(s -> s.generate(random))
 			.sorted()
 			.collect(Collectors.toList());
 
@@ -696,7 +695,7 @@ public class NumericCaseTest {
 	}
 
 	@Test
-	public void testLongAdditionalSuppliers() {
+	public void testLongAdditionalSubcases() {
 		Set<Long> longs;
 
 		longs = Any.longInteger().generateAllOnce(random);
@@ -712,11 +711,11 @@ public class NumericCaseTest {
 		assertFalse(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE - 10L));
 	}
 
-	private SupplierExpectations assertSuppliers(Set<Function<Random, Integer>> suppliers) {
-		SupplierExpectations res = new SupplierExpectations();
+	private SubcaseExpectations assertSubcases(Set<Subcase<Integer>> subcases) {
+		SubcaseExpectations res = new SubcaseExpectations();
 
-		for(Function<Random, Integer> supplier : suppliers) {
-			int i = supplier.apply(random);
+		for(Subcase<Integer> subcase : subcases) {
+			int i = subcase.generate(random);
 
 			if(i < 0) {
 				assertNull("Expected at most two negative values", res.negative2);
@@ -735,12 +734,12 @@ public class NumericCaseTest {
 		return res;
 	}
 
-	private static class SupplierExpectations {
+	private static class SubcaseExpectations {
 		Integer negative, negative2;
 		Integer positive, positive2;
 		Integer zero;
 
-		SupplierExpectations expectSpecific(int expected) {
+		SubcaseExpectations expectSpecific(int expected) {
 			assertTrue(
 				(negative != null && negative == expected) ||
 				(negative2 != null && negative2 == expected) ||
@@ -750,43 +749,43 @@ public class NumericCaseTest {
 			return this;
 		}
 
-		SupplierExpectations expectNegative() {
+		SubcaseExpectations expectNegative() {
 			assertNotNull("Expected a negative value.", negative);
 			return this;
 		}
 
-		SupplierExpectations expectPositive() {
+		SubcaseExpectations expectPositive() {
 			assertNotNull("Expected a positive value.", positive);
 			return this;
 		}
 
-		SupplierExpectations expectZero() {
+		SubcaseExpectations expectZero() {
 			assertNotNull("Expected a zero value.", zero);
 			return this;
 		}
 
-		SupplierExpectations expectNoNegative() {
+		SubcaseExpectations expectNoNegative() {
 			assertNull("Expected no negative value; instead got " + negative, negative);
 			return this;
 		}
 
-		SupplierExpectations expectNoPositive() {
+		SubcaseExpectations expectNoPositive() {
 			assertNull("Expected no positive value; instead got " + positive, positive);
 			return this;
 		}
 
-		SupplierExpectations expectNoZero() {
+		SubcaseExpectations expectNoZero() {
 			assertNull("Expected no zero value; instead got " + zero, zero);
 			return this;
 		}
 
-		SupplierExpectations expectOfNegative(Predicate<Integer> predicate) {
+		SubcaseExpectations expectOfNegative(Predicate<Integer> predicate) {
 			assertTrue("Expected negative {" + negative + "} to match predicate", predicate.test(negative));
 			assertTrue("Expected negative {" + negative2 + "} to match predicate", predicate.test(negative2));
 			return this;
 		}
 
-		SupplierExpectations expectOfPositive(Predicate<Integer> predicate) {
+		SubcaseExpectations expectOfPositive(Predicate<Integer> predicate) {
 			assertTrue("Expected positive {" + positive + "} to match predicate", predicate.test(positive));
 			assertTrue("Expected positive {" + positive2 + "} to match predicate", predicate.test(positive2));
 			return this;

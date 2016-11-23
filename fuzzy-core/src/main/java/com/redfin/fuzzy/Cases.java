@@ -1,11 +1,13 @@
 package com.redfin.fuzzy;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Cases {
 
@@ -73,21 +75,21 @@ public class Cases {
 		FuzzyPreconditions.checkNotNullAndContainsNoNulls(baseCases);
 		FuzzyPreconditions.checkNotNull("composition function is required.", composition);
 
-		Function[][] composedSubcases = caseCompositionMode.algorithm.apply(baseCases);
-		Set<Function<Random, OUTPUT>> suppliers = new HashSet<>();
-		for(final Function[] subcase : composedSubcases) {
-			suppliers.add(r -> {
+		Subcase[][] composedSubcases = caseCompositionMode.algorithm.apply(baseCases);
+		Set<Subcase<OUTPUT>> subcases = new HashSet<>();
+		for(final Subcase[] subcase : composedSubcases) {
+			subcases.add(r -> {
 				Object[] values = new Object[subcase.length];
 				for (int j = 0; j < subcase.length; j++) {
 					@SuppressWarnings("unchecked")
-					Function<Random, ?> supplier = (Function<Random, ?>) subcase[j];
-					values[j] = supplier.apply(r);
+					Subcase<?> supplier = (Subcase<?>) subcase[j];
+					values[j] = supplier.generate(r);
 				}
 				return composition.apply(r, values);
 			});
 		}
 
-		return () -> suppliers;
+		return () -> subcases;
 	}
 
 	/**
@@ -338,46 +340,56 @@ public class Cases {
 	}
 
 	@SafeVarargs
-	public static <T> Case<T> of(Function<Random, T>... suppliers) {
-		FuzzyPreconditions.checkNotNullAndContainsNoNulls(suppliers);
-		Set<Function<Random, T>> suppliersSet = FuzzyUtil.setOf(suppliers);
-		return () -> suppliersSet;
+	public static <T> Case<T> of(Function<Random, T>... subcases) {
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(subcases);
+		Set<Subcase<T>> subcasesSet = Arrays.stream(subcases)
+			.map(s -> (Subcase<T>)(s::apply))
+			.collect(Collectors.toSet());
+
+		return () -> subcasesSet;
 	}
 
 	@SafeVarargs
-	public static <T> Case<T> of(Supplier<T>... suppliers) {
-		FuzzyPreconditions.checkNotNullAndContainsNoNulls(suppliers);
+	public static <T> Case<T> of(Subcase<T>... subcases) {
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(subcases);
+		Set<Subcase<T>> subcasesSet = FuzzyUtil.setOf(subcases);
+		return () -> subcasesSet;
+	}
 
-		Set<Function<Random, T>> suppliersSet = new HashSet<>(suppliers.length);
-		for(Supplier<T> supplier : suppliers) {
-			suppliersSet.add(r -> supplier.get());
+	@SafeVarargs
+	public static <T> Case<T> of(Supplier<T>... subcases) {
+		FuzzyPreconditions.checkNotNullAndContainsNoNulls(subcases);
+
+		Set<Subcase<T>> subcasesSet = new HashSet<>(subcases.length);
+		for(Supplier<T> supplier : subcases) {
+			subcasesSet.add(r -> supplier.get());
 		}
 
-		return () -> suppliersSet;
+		return () -> subcasesSet;
 	}
 
 	@SafeVarargs
 	public static <T> Case<T> of(T... literalCases) {
 		FuzzyPreconditions.checkNotNull(literalCases);
 
-		Set<Function<Random, T>> suppliersSet = new HashSet<>(literalCases.length);
+		Set<Subcase<T>> subcases = new HashSet<>(literalCases.length);
 		for(T t : literalCases) {
-			suppliersSet.add(r -> t);
+			subcases.add(r -> t);
 		}
 
-		return () -> suppliersSet;
+		return () -> subcases;
 	}
 
 	@SafeVarargs
 	public static <T> Case<T> ofDelegates(Supplier<Case<T>>... delegateCases) {
 		FuzzyPreconditions.checkNotNullAndContainsNoNulls(delegateCases);
 
-		Set<Function<Random, T>> suppliers = new HashSet<>();
+		Set<Subcase<T>> subcases = new HashSet<>();
 		for(Supplier<Case<T>> delegate : delegateCases) {
-			suppliers.addAll(delegate.get().getSuppliers());
+			subcases.addAll(delegate.get().getSubcases());
 		}
 
-		return () -> suppliers;
+		return () -> subcases;
 	}
 
 	public static <T, U> Case<U> map(Case<T> original, Function<T, U> mapping) {
@@ -392,14 +404,14 @@ public class Cases {
 		FuzzyPreconditions.checkNotNull(mapping);
 
 		return () -> {
-			Set<Function<Random, T>> sourceSuppliers = original.getSuppliers();
+			Set<Subcase<T>> sourceSubcases = original.getSubcases();
 
-			Set<Function<Random, U>> mappedSuppliers = new HashSet<>(sourceSuppliers.size());
-			for(Function<Random, T> source : sourceSuppliers) {
-				mappedSuppliers.add(r -> mapping.apply(r, source.apply(r)));
+			Set<Subcase<U>> mappedSubcases = new HashSet<>(sourceSubcases.size());
+			for(Subcase<T> source : sourceSubcases) {
+				mappedSubcases.add(r -> mapping.apply(r, source.generate(r)));
 			}
 
-			return mappedSuppliers;
+			return mappedSubcases;
 		};
 	}
 

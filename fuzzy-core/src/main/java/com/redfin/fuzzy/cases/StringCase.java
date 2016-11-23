@@ -3,16 +3,15 @@ package com.redfin.fuzzy.cases;
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.Cases;
-import com.redfin.fuzzy.Literal;
 import com.redfin.fuzzy.FuzzyPreconditions;
-import com.redfin.fuzzy.Suppliers;
 import com.redfin.fuzzy.FuzzyUtil;
+import com.redfin.fuzzy.Literal;
+import com.redfin.fuzzy.Subcase;
+import com.redfin.fuzzy.Subcases;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 
 public class StringCase implements Case<String> {
 
@@ -107,11 +106,11 @@ public class StringCase implements Case<String> {
 	}
 
 	@Override
-	public Set<Function<Random, String>> getSuppliers() {
+	public Set<Subcase<String>> getSubcases() {
 		// TODO: this is wasteful with regards to the case of string length of zero, which always results in ""
-		return Suppliers.pairwisePermutations(
-			length.getSuppliers(),
-			sourceStrings.getSuppliers(),
+		return Subcases.pairwisePermutations(
+			length.getSubcases(),
+			sourceStrings.getSubcases(),
 
 			(rnd, length, strings) -> {
 				if(length == null || length <= 0)

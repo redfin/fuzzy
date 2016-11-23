@@ -167,6 +167,31 @@ public class ContextTest {
 	}
 
 	@Test
+	public void testReportWithCustomDescription() {
+		Context.init(0);
+
+		Generator<String> variableA = Generator.named("variableA").of(() -> FuzzyUtil.setOf(
+			new Subcase<String>() {
+				@Override
+				public String generate(Random random) { return "I'm a subcase!"; }
+				@Override
+				public void describeTo(StringBuilder sink, String value) {
+					assertEquals("I'm a subcase!", value);
+					sink.append("<I'm a description!>");
+				}
+			}
+		));
+
+		assertEquals("I'm a subcase!", variableA.get());
+
+		String report = Context.report();
+		assertEquals(
+			"  <I'm a description!> from generator variableA\n",
+			report
+		);
+	}
+
+	@Test
 	public void testReportUninitialized() {
 		assertEquals("", Context.report());
 	}

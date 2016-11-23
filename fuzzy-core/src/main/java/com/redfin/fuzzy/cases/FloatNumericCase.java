@@ -2,11 +2,10 @@ package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
-import com.redfin.fuzzy.Suppliers;
+import com.redfin.fuzzy.Subcase;
+import com.redfin.fuzzy.Subcases;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 
 public class FloatNumericCase implements Case<Float> {
 
@@ -70,12 +69,12 @@ public class FloatNumericCase implements Case<Float> {
 	}
 
 	@Override
-	public Set<Function<Random, Float>> getSuppliers() {
+	public Set<Subcase<Float>> getSubcases() {
 		Case<Double> baseCase = Any
 			.doublePrecisionNumber()
 			.inRange(min == null ? MIN_GENERATED : min, max == null ? MAX_GENERATED : max)
 			.excluding(excluding);
 
-		return Suppliers.mapOutput(baseCase.getSuppliers(), Double::floatValue);
+		return Subcases.mapOutput(baseCase.getSubcases(), Double::floatValue);
 	}
 }

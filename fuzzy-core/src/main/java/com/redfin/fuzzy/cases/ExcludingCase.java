@@ -2,13 +2,12 @@ package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Case;
 import com.redfin.fuzzy.FuzzyPreconditions;
-import com.redfin.fuzzy.Suppliers;
+import com.redfin.fuzzy.Subcase;
+import com.redfin.fuzzy.Subcases;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 
 public class ExcludingCase<T> implements Case<T> {
 
@@ -37,12 +36,12 @@ public class ExcludingCase<T> implements Case<T> {
 	}
 
 	@Override
-	public Set<Function<Random, T>> getSuppliers() {
-		return Suppliers.map(
-			baseCase.getSuppliers(),
-			supplier -> (r -> {
+	public Set<Subcase<T>> getSubcases() {
+		return Subcases.map(
+			baseCase.getSubcases(),
+			subcase -> (r -> {
 				for(int i = 0; i < MAX_ATTEMPTS; i++) {
-					T t = supplier.apply(r);
+					T t = subcase.generate(r);
 					if(!excludedValues.contains(t)) {
 						return t;
 					}

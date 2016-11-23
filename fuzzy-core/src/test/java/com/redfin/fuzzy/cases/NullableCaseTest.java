@@ -1,12 +1,14 @@
 package com.redfin.fuzzy.cases;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.Subcase;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,15 +24,15 @@ public class NullableCaseTest {
 	@Test
 	public void testGetSuppliers() {
 		Case<Integer> subject = Any.nullableOf(Any.integer().greaterThanOrEqualTo(0));
-		Set<Function<Random, Integer>> suppliers = subject.getSuppliers();
+		Set<Subcase<Integer>> subcases = subject.getSubcases();
 
-		assertEquals(3, suppliers.size());
+		assertEquals(3, subcases.size());
 
 		boolean foundNull, foundZero, foundPositive;
 		foundNull = foundZero = foundPositive = false;
 
-		for(Function<Random, Integer> supplier : suppliers) {
-			Integer i = supplier.apply(random);
+		for(Subcase<Integer> supplier : subcases) {
+			Integer i = supplier.generate(random);
 			if(i == null) {
 				assertFalse(foundNull);
 				foundNull = true;

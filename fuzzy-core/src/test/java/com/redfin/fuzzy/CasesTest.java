@@ -1,15 +1,12 @@
 package com.redfin.fuzzy;
 
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.Test;
 
 public class CasesTest {
 
@@ -133,25 +130,25 @@ public class CasesTest {
 		Case<String> original = () -> Collections.singleton(r -> "1234");
 		Case<Integer> mapped = Cases.map(original, Integer::new);
 
-		Set<Function<Random, Integer>> suppliers = mapped.getSuppliers();
-		assertEquals(1, suppliers.size());
-		assertEquals(new Integer(1234), suppliers.stream().findFirst().get().apply(null));
+		Set<Subcase<Integer>> subcases = mapped.getSubcases();
+		assertEquals(1, subcases.size());
+		assertEquals(new Integer(1234), subcases.stream().findFirst().get().generate(null));
 	}
 
 	@Test
-	public void testMapWithMultipleSuppliers() {
+	public void testMapWithMultipleSubcases() {
 		Case<String> original = () -> FuzzyUtil.setOf(
 			r -> "1234",
 			r -> "5678"
 		);
 
 		Case<Integer> mapped = Cases.map(original, s -> -Integer.valueOf(s));
-		Set<Function<Random, Integer>> suppliers = mapped.getSuppliers();
+		Set<Subcase<Integer>> subcases = mapped.getSubcases();
 
-		assertEquals(2, suppliers.size());
+		assertEquals(2, subcases.size());
 
-		Set<Integer> values = suppliers.stream()
-			.map(s -> s.apply(null))
+		Set<Integer> values = subcases.stream()
+			.map(s -> s.generate(null))
 			.collect(Collectors.toSet())
 		;
 

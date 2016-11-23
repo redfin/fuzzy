@@ -48,11 +48,11 @@ public class FloatNumericCaseTest {
 
 	@Test
 	public void testInRangeLessThanNegativeOne() {
-		Set<Float> actuals = Any.singlePrecisionNumber().inRange(-1337, -5).generateAllOnce(random);
+		Set<Float> actuals = Any.singlePrecisionNumber().inRange(-1337, -918).generateAllOnce(random);
 
 		assertTrue(actuals.contains(-1337f));
-		assertTrue(actuals.contains(-5f));
-		assertTrue(actuals.stream().anyMatch(d -> d > -1337 && d < -5));
+		assertTrue(actuals.contains(-918f));
+		assertTrue(actuals.stream().anyMatch(d -> d > -1337 && d < -918));
 
 		assertEquals(3, actuals.size());
 	}
@@ -120,11 +120,11 @@ public class FloatNumericCaseTest {
 
 	@Test
 	public void testInRangeGreaterThanOne() {
-		Set<Float> actuals = Any.singlePrecisionNumber().inRange(5, 1337).generateAllOnce(random);
+		Set<Float> actuals = Any.singlePrecisionNumber().inRange(918, 1337).generateAllOnce(random);
 
-		assertTrue(actuals.contains(5f));
+		assertTrue(actuals.contains(918f));
 		assertTrue(actuals.contains(1337f));
-		assertTrue(actuals.stream().anyMatch(d -> d > 5 && d < 1337));
+		assertTrue(actuals.stream().anyMatch(d -> d > 918 && d < 1337));
 
 		assertEquals(3, actuals.size());
 	}

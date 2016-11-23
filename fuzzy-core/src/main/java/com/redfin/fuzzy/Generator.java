@@ -3,9 +3,35 @@ package com.redfin.fuzzy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.function.Function;
 
+/**
+ * The generator is a stand-in for an input value in a test case. It is composed of one or more {@linkplain Case cases}
+ * that describe the types of value the generator represents. The fuzzy engine will ensure that your test is executed
+ * with each <a href="https://en.wikipedia.org/wiki/Equivalence_partitioning"><em>equivalency class</em></a> supported
+ * by your generators.
+ *
+ * <p><pre>{@code @Test
+ * public void myTest() {
+ *     // Declare all generators at the beginning of your test, before you call .get() on any of them.
+ *     Generator&lt;String> inputString = Generator.of(Any.string());
+ *     Generator&lt;Integer> inputInt = Generator.of(Any.integer());
+ *
+ *     String actual = subject.someMethod(inputString.get(), inputInt.get());
+ *
+ *     // Each subsequent call to .get() will return the same value, so you can use them multiple times in your test.
+ *     assertEquals(inputString.get() + " " + inputInt.get(), actual);
+ * }}</pre></p>
+ * <p>Once you have declared the generators used by your test, you can obtain specific test values by calling the
+ * {@link #get()} method. For a given iteration, each subsequent call to {@code get} will return exactly the same value,
+ * so it is not necessary to store the result in a separate variable. For example:
+ * </p>
+ * <p> You must declare each generator used by your test before any of them are used (by calling {@code get}). This
+ * pattern ensures that fuzzy understands how many test permutations are necessary without the need for too much
+ * boilerplate code.
+ * </p>
+ *
+ * @param <T> the type of value produced by this generator.
+ */
 public class Generator<T> implements Comparable<Generator<T>> {
 
 	/*package*/ Generator(Context c) { context = c; }
@@ -40,7 +66,7 @@ public class Generator<T> implements Comparable<Generator<T>> {
 	public static <X> Generator<X> ofCases(Case<X>... cases) { return new GeneratorBuilder().of(cases); }
 
 	@SafeVarargs
-	public static <X> Generator<X> of(Function<Random, X>... suppliers) { return new GeneratorBuilder().of(suppliers); }
+	public static <X> Generator<X> of(Subcase<X>... subcases) { return new GeneratorBuilder().of(subcases); }
 
 	@Override
 	public final int hashCode() {
@@ -96,9 +122,9 @@ public class Generator<T> implements Comparable<Generator<T>> {
 		public final <X> Generator<X> of(X... literals) { return this.of(Any.of(literals)); }
 
 		@SafeVarargs
-		public final <X> Generator<X> of(Function<Random, X>... suppliers) {
-			FuzzyPreconditions.checkNotNullAndContainsNoNulls(suppliers);
-			return this.of(() -> FuzzyUtil.setOf(suppliers));
+		public final <X> Generator<X> of(Subcase<X>... subcases) {
+			FuzzyPreconditions.checkNotNullAndContainsNoNulls(subcases);
+			return this.of(Cases.of(subcases));
 		}
 	}
 

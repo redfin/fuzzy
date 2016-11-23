@@ -2,9 +2,10 @@ package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
-import com.redfin.fuzzy.Literal;
 import com.redfin.fuzzy.FuzzyPreconditions;
-import com.redfin.fuzzy.Suppliers;
+import com.redfin.fuzzy.Literal;
+import com.redfin.fuzzy.Subcase;
+import com.redfin.fuzzy.Subcases;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -60,11 +61,11 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 	}
 
 	@Override
-	public Set<Function<Random, COLLECTION>> getSuppliers() {
+	public Set<Subcase<COLLECTION>> getSubcases() {
 		if(homogeneousMode) {
-			return Suppliers.pairwisePermutations(
-				sizeCase.getSuppliers(),
-				elementsCase.getSuppliers(),
+			return Subcases.pairwisePermutations(
+				sizeCase.getSubcases(),
+				elementsCase.getSubcases(),
 				(random, size, element) -> {
 					if(size == null || size < 0)
 						throw new IllegalStateException(String.format(
@@ -82,16 +83,16 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 			);
 		}
 		else {
-			List<Function<Random, Integer>> sizeSuppliers = new ArrayList<>(sizeCase.getSuppliers());
-			List<Function<Random, ELEMENT>> elementSuppliers = new ArrayList<>(elementsCase.getSuppliers());
+			List<Subcase<Integer>> sizeSubcases = new ArrayList<>(sizeCase.getSubcases());
+			List<Subcase<ELEMENT>> elementSubcases = new ArrayList<>(elementsCase.getSubcases());
 
 			// Return enough functions to cover either all size cases or all supplier cases, whichever is greater.
 			// Add some arbitrarily chosen padding to the size cases to account for some subset of them which will be
 			// zero.
 			AtomicInteger elementSelector = new AtomicInteger(0);
-			int supplierCount = Math.max(sizeSuppliers.size() + 2, elementSuppliers.size());
+			int supplierCount = Math.max(sizeSubcases.size() + 2, elementSubcases.size());
 
-			Set<Function<Random, COLLECTION>> suppliers = new HashSet<>(supplierCount);
+			Set<Subcase<COLLECTION>> suppliers = new HashSet<>(supplierCount);
 			for(int i = 0; i < supplierCount; i++) {
 				suppliers.add(new CollectionSupplier<>(
 					this::createCollection,
@@ -100,9 +101,9 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 							"Collection case's size case of type %s returned an illegal null supplier",
 							sizeCase.getClass()
 						),
-						sizeSuppliers.get(i % sizeSuppliers.size())
+						sizeSubcases.get(i % sizeSubcases.size())
 					),
-					elementSuppliers,
+					elementSubcases,
 					elementSelector
 				));
 			}
@@ -111,28 +112,28 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 		}
 	}
 
-	private static class CollectionSupplier<D extends Collection<U>, U> implements Function<Random, D> {
+	private static class CollectionSupplier<D extends Collection<U>, U> implements Subcase<D> {
 
 		private final Function<Integer, D> collectionCreator;
-		private final Function<Random, Integer> sizeSupplier;
-		private final List<Function<Random, U>> elementSuppliers;
+		private final Subcase<Integer> sizeSubcase;
+		private final List<Subcase<U>> elementSubcases;
 		private final AtomicInteger elementSelector;
 
 		private CollectionSupplier(
 			Function<Integer, D> collectionCreator,
-			Function<Random, Integer> sizeSupplier,
-			List<Function<Random, U>> elementSuppliers,
+			Subcase<Integer> sizeSubcase,
+			List<Subcase<U>> elementSubcases,
 			AtomicInteger elementSelector
 		) {
 			this.collectionCreator = collectionCreator;
-			this.sizeSupplier = sizeSupplier;
-			this.elementSuppliers = elementSuppliers;
+			this.sizeSubcase = sizeSubcase;
+			this.elementSubcases = elementSubcases;
 			this.elementSelector = elementSelector;
 		}
 
 		@Override
-		public D apply(Random random) {
-			Integer size = sizeSupplier.apply(random);
+		public D generate(Random random) {
+			Integer size = sizeSubcase.generate(random);
 			if(size == null || size < 0)
 				throw new IllegalStateException(String.format(
 					"Supplier for collection size returned an illegal value of %s.",
@@ -141,11 +142,11 @@ public abstract class CollectionCase<COLLECTION extends Collection<ELEMENT>, ELE
 
 			D result = collectionCreator.apply(size);
 			for(int i = 0; i < size; i++) {
-				int j = elementSelector.getAndIncrement() % elementSuppliers.size();
+				int j = elementSelector.getAndIncrement() % elementSubcases.size();
 				result.add(FuzzyPreconditions.checkNotNull(
 					"Case for collection elements returned an illegal null supplier.",
-					elementSuppliers.get(j)
-				).apply(random));
+					elementSubcases.get(j)
+				).generate(random));
 			}
 
 			return result;

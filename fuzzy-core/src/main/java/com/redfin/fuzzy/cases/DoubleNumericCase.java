@@ -1,10 +1,9 @@
 package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.Subcase;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DoubleNumericCase implements Case<Double> {
@@ -73,10 +72,10 @@ public class DoubleNumericCase implements Case<Double> {
 		return this;
 	}
 
-	private Function<Random, Double> exclude(Function<Random, Double> supplier) {
+	private Subcase<Double> exclude(Subcase<Double> subcase) {
 		return r -> {
 			for(int i = 0; i < MAX_ATTEMPTS; i++) {
-				double d = supplier.apply(r);
+				double d = subcase.generate(r);
 				if(!excluding.contains(d)) {
 					return d;
 				}
@@ -87,13 +86,13 @@ public class DoubleNumericCase implements Case<Double> {
 		};
 	}
 
-	private static Function<Random, Double> supplierInRange(double min, double max) {
+	private static Subcase<Double> subcaseInRange(double min, double max) {
 		return r -> min + (r.nextDouble() * (max - min));
 	}
 
 	@Override
-	public Set<Function<Random, Double>> getSuppliers() {
-		Set<Function<Random, Double>> cases = new HashSet<>();
+	public Set<Subcase<Double>> getSubcases() {
+		Set<Subcase<Double>> cases = new HashSet<>();
 
 		// Zero
 		if(!excluding.contains(0.0) && (min == null || min < 0) && (max == null || max > 0))
@@ -101,26 +100,26 @@ public class DoubleNumericCase implements Case<Double> {
 
 		// < -1
 		if(min == null)
-			cases.add(supplierInRange(MIN_GENERATED, -1));
+			cases.add(subcaseInRange(MIN_GENERATED, -1));
 		else if(min < -1)
-			cases.add(supplierInRange(min, -1));
+			cases.add(subcaseInRange(min, max == null ? -1 : Math.min(max, -1)));
 
 		// < 0 && > -1
 		if((min == null || min < 0) && (max == null || max > -1))
-			cases.add(supplierInRange(
+			cases.add(subcaseInRange(
 				min == null ? -MAX_GENERATED_FRACTIONAL : Math.max(min, -MAX_GENERATED_FRACTIONAL),
 				max == null ? -MIN_GENERATED_FRACTIONAL : Math.min(max, -MIN_GENERATED_FRACTIONAL)
 			));
 
 		// > 1
 		if(max == null)
-			cases.add(supplierInRange(1, MAX_GENERATED));
+			cases.add(subcaseInRange(1, MAX_GENERATED));
 		else if(max > 1)
-			cases.add(supplierInRange(1, max));
+			cases.add(subcaseInRange(min == null ? 1 : Math.max(min, 1), max));
 
 		// > 0 && < 1
 		if((min == null || min < 1) && (max == null || max > 0))
-			cases.add(supplierInRange(
+			cases.add(subcaseInRange(
 				min == null ? MIN_GENERATED_FRACTIONAL : Math.max(min, MIN_GENERATED_FRACTIONAL),
 				max == null ? MAX_GENERATED_FRACTIONAL : Math.min(max, MAX_GENERATED_FRACTIONAL)
 			));

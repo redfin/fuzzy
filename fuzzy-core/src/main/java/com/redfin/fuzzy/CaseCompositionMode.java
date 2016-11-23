@@ -1,7 +1,6 @@
 package com.redfin.fuzzy;
 
 import com.redfin.fuzzy.pairwise.Pairwise;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,21 +52,21 @@ public enum CaseCompositionMode {
 	 * </p>
 	 */
 	EACH_SUBCASE_AT_LEAST_ONCE(baseCases -> {
-		List<Function[]> permutations = new ArrayList<>();
+		List<Subcase[]> permutations = new ArrayList<>();
 		int[] indices = new int[baseCases.length];
 		int completed = 0;
 
-		Function[][] suppliers = new Function[baseCases.length][];
+		Subcase[][] suppliers = new Subcase[baseCases.length][];
 		for(int i = 0; i < baseCases.length; i++) {
 			@SuppressWarnings("unchecked")
-			Set<Function> subcases = baseCases[i].getSuppliers();
+			Set<Function> subcases = baseCases[i].getSubcases();
 
-			Function[] subcasesArray = subcases.toArray(new Function[] {});
+			Subcase[] subcasesArray = subcases.toArray(new Subcase[] {});
 			suppliers[i] = subcasesArray;
 		}
 
 		while(completed < baseCases.length) {
-			Function[] subcase = new Function[baseCases.length];
+			Subcase[] subcase = new Subcase[baseCases.length];
 			for(int i = 0; i < baseCases.length; i++) {
 				subcase[i] = suppliers[i][indices[i] % suppliers[i].length];
 				if(++indices[i] == suppliers[i].length) { completed++; }
@@ -75,7 +74,7 @@ public enum CaseCompositionMode {
 			permutations.add(subcase);
 		}
 
-		return permutations.toArray(new Function[][] {});
+		return permutations.toArray(new Subcase[][] {});
 	}),
 
 	/**
@@ -122,18 +121,18 @@ public enum CaseCompositionMode {
 	PAIRWISE_PERMUTATIONS_OF_SUBCASES(baseCases -> {
 		List<Set> parameters = Arrays
 			.stream(baseCases)
-			.map((Function<Case, Set>) Case::getSuppliers)
+			.map((Function<Case, Set>) Case::getSubcases)
 			.collect(Collectors.toList());
 
 		Pairwise<Set> p = new Pairwise<>(parameters);
 		Stack<List<Object>> permutations = p.generate();
 
-		Function[][] subcases = new Function[permutations.size()][];
+		Subcase[][] subcases = new Subcase[permutations.size()][];
 		int i = 0;
 		for(List<Object> subcase : permutations) {
-			Function[] suppliers = new Function[baseCases.length];
+			Subcase[] suppliers = new Subcase[baseCases.length];
 			for(int j = 0; j < baseCases.length; j++) {
-				suppliers[j] = (Function)subcase.get(j);
+				suppliers[j] = (Subcase)subcase.get(j);
 			}
 			subcases[i++] = suppliers;
 		}
@@ -147,5 +146,5 @@ public enum CaseCompositionMode {
 
 	private CaseCompositionMode(Algorithm algorithm) { this.algorithm = algorithm; }
 
-	interface Algorithm { Function[][] apply(Case[] baseCases); }
+	interface Algorithm { Subcase[][] apply(Case[] baseCases); }
 }

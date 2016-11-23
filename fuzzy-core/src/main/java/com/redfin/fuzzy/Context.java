@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
-import java.util.function.Function;
 
 public class Context {
 
@@ -92,7 +91,7 @@ public class Context {
 			Iteration i = variable.getValue();
 			if(i.generated) {
 				sb.append("  ");
-				FuzzyUtil.inspectTo(sb, i.getCurrent());
+				i.describeTo(sb);
 				sb.append(" from generator ");
 				sb.append(variable.getKey().getName());
 				sb.append('\n');
@@ -189,7 +188,7 @@ public class Context {
 
 			for(int i = 0; i < variables.size(); i++) {
 				@SuppressWarnings("unchecked")
-				Function<Random, ?> supplier = (Function<Random, ?>) permutation.get(i);
+				Subcase<?> supplier = (Subcase<?>) permutation.get(i);
 
 				Variable sourceVar = variables.get(i);
 				Iteration iteration = new Iteration(supplier);
@@ -249,22 +248,22 @@ public class Context {
 		sb.append("\n");
 	}
 
-	private static class Variable extends HashSet<Function<Random, ?>> {
+	private static class Variable extends HashSet<Subcase<?>> {
 		private static final long serialVersionUID = 1L;
 		transient final Generator g;
 		Variable(Generator g, Case<?>[] cases) {
 			this.g = g;
-			for(Case<?> c : cases) addAll(c.getSuppliers());
+			for(Case<?> c : cases) addAll(c.getSubcases());
 		}
 	}
 
 	private static class Iteration {
 		private Object iterationValue;
 		private volatile boolean generated;
-		private final Function<Random, ?> supplier;
+		private final Subcase<?> subcase;
 
-		public Iteration(Function<Random, ?> supplier) {
-			this.supplier = supplier;
+		public Iteration(Subcase<?> subcase) {
+			this.subcase = subcase;
 		}
 
 		synchronized Object getCurrent() {
@@ -273,10 +272,21 @@ public class Context {
 
 		synchronized Object get(Random random) {
 			if(!generated) {
-				iterationValue = supplier.apply(random);
+				iterationValue = subcase.generate(random);
 				generated = true;
 			}
 			return iterationValue;
+		}
+
+		synchronized void describeTo(StringBuilder sb) {
+			if(!generated) {
+				sb.append("{not generated}");
+			}
+			else {
+				@SuppressWarnings("unchecked")
+				Subcase<Object> castSubcase = (Subcase<Object>) subcase;
+				castSubcase.describeTo(sb, iterationValue);
+			}
 		}
 	}
 

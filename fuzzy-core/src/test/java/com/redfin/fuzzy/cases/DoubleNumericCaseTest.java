@@ -44,11 +44,11 @@ public class DoubleNumericCaseTest {
 
 	@Test
 	public void testInRangeLessThanNegativeOne() {
-		Set<Double> actuals = Any.doublePrecisionNumber().inRange(-1337, -5).generateAllOnce(random);
+		Set<Double> actuals = Any.doublePrecisionNumber().inRange(-1337, -918).generateAllOnce(random);
 
 		assertTrue(actuals.contains(-1337d));
-		assertTrue(actuals.contains(-5d));
-		assertTrue(actuals.stream().anyMatch(d -> d > -1337 && d < -5));
+		assertTrue(actuals.contains(-918d));
+		assertTrue(actuals.stream().anyMatch(d -> d > -1337 && d < -918));
 
 		assertEquals(3, actuals.size());
 	}
@@ -116,45 +116,45 @@ public class DoubleNumericCaseTest {
 
 	@Test
 	public void testInRangeGreaterThanOne() {
-		Set<Double> actuals = Any.doublePrecisionNumber().inRange(5, 1337).generateAllOnce(random);
+		Set<Double> actuals = Any.doublePrecisionNumber().inRange(918, 1337).generateAllOnce(random);
 
-		assertTrue(actuals.contains(5d));
+		assertTrue(actuals.contains(918d));
 		assertTrue(actuals.contains(1337d));
-		assertTrue(actuals.stream().anyMatch(d -> d > 5 && d < 1337));
+		assertTrue(actuals.stream().anyMatch(d -> d > 918 && d < 1337));
 
 		assertEquals(3, actuals.size());
 	}
 
 	@Test
 	public void testLessThan() {
-		Set<Double> actuals = Any.doublePrecisionNumber().lessThan(-5).generateAllOnce(random);
+		Set<Double> actuals = Any.doublePrecisionNumber().lessThan(-918).generateAllOnce(random);
 
-		assertFalse(actuals.contains(-5d));
-		assertFalse(actuals.stream().anyMatch(d -> d >= -5));
+		assertFalse(actuals.contains(-918d));
+		assertFalse(actuals.stream().anyMatch(d -> d >= -918));
 	}
 
 	@Test
 	public void testLessThanOrEqualTo() {
-		Set<Double> actuals = Any.doublePrecisionNumber().lessThanOrEqualTo(-5).generateAllOnce(random);
+		Set<Double> actuals = Any.doublePrecisionNumber().lessThanOrEqualTo(-918).generateAllOnce(random);
 
-		assertTrue(actuals.contains(-5d));
-		assertFalse(actuals.stream().anyMatch(d -> d > -5));
+		assertTrue(actuals.contains(-918d));
+		assertFalse(actuals.stream().anyMatch(d -> d > -918));
 	}
 
 	@Test
 	public void testGreaterThan() {
-		Set<Double> actuals = Any.doublePrecisionNumber().greaterThan(-5).generateAllOnce(random);
+		Set<Double> actuals = Any.doublePrecisionNumber().greaterThan(-918).generateAllOnce(random);
 
-		assertFalse(actuals.contains(-5d));
-		assertFalse(actuals.stream().anyMatch(d -> d <= -5));
+		assertFalse(actuals.contains(-918d));
+		assertFalse(actuals.stream().anyMatch(d -> d <= -918));
 	}
 
 	@Test
 	public void testGreaterThanOrEqualTo() {
-		Set<Double> actuals = Any.doublePrecisionNumber().greaterThanOrEqualTo(-5).generateAllOnce(random);
+		Set<Double> actuals = Any.doublePrecisionNumber().greaterThanOrEqualTo(-918).generateAllOnce(random);
 
-		assertTrue(actuals.contains(-5d));
-		assertFalse(actuals.stream().anyMatch(d -> d < -5));
+		assertTrue(actuals.contains(-918d));
+		assertFalse(actuals.stream().anyMatch(d -> d < -918));
 	}
 
 }
