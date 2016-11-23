@@ -340,16 +340,6 @@ public class Cases {
 	}
 
 	@SafeVarargs
-	public static <T> Case<T> of(Function<Random, T>... subcases) {
-		FuzzyPreconditions.checkNotNullAndContainsNoNulls(subcases);
-		Set<Subcase<T>> subcasesSet = Arrays.stream(subcases)
-			.map(s -> (Subcase<T>)(s::apply))
-			.collect(Collectors.toSet());
-
-		return () -> subcasesSet;
-	}
-
-	@SafeVarargs
 	public static <T> Case<T> of(Subcase<T>... subcases) {
 		FuzzyPreconditions.checkNotNullAndContainsNoNulls(subcases);
 		Set<Subcase<T>> subcasesSet = FuzzyUtil.setOf(subcases);

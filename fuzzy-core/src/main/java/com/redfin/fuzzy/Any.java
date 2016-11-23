@@ -8,11 +8,8 @@ import com.redfin.fuzzy.cases.NullableCase;
 import com.redfin.fuzzy.cases.NumericCase;
 import com.redfin.fuzzy.cases.StringCase;
 import com.redfin.fuzzy.cases.UnionCase;
-
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Any {
@@ -23,7 +20,7 @@ public class Any {
 	}
 
 	@SafeVarargs
-	public static <T> Case<T> of(Function<Random, T>... cases) { return Cases.of(cases); }
+	public static <T> Case<T> of(Subcase<T>... subcases) { return Cases.of(subcases); }
 
 	@SafeVarargs
 	public static <T> Case<T> of(Supplier<T>... cases) { return Cases.of(cases); }
