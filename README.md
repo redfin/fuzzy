@@ -1,5 +1,3 @@
-WIP: See @markbiddlecom
-
 Fuzzy is a handy little library for writing expressive
 ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) in Java.
 
@@ -23,6 +21,15 @@ code is tested against common input edge cases. For example, a generator
 of `Any.integer()` will inject your inputs with negative values,
 positive values, and zero.
 
+* [Use with JUnit](#user-content-use-with-junit)
+* [Generators and Cases](#user-content-generators-and-cases)
+* [Behavioral Specifications](#user-content-behavioral-specifications)
+* [Pairwise Testing](#user-content-pairwise-testing)
+* [Use with Other and Custom Test Frameworks](#user-content-use-with-other-and-custom-test-frameworks)
+* [FAQ](#user-content-faq)
+* [`FuzzyRule` Options](#user-content-fuzzyrule-options)
+* [Contributing](#user-content-contributing)
+
 # Use with JUnit
 
 The `FuzzyRule` test rule can be added to your JUnit test cases to
@@ -36,8 +43,10 @@ public class MyClassTest {
 
     @Test
     public void testSomething() {
+        // Declare your test variables
         Generator<String> myString = Generator.of(Any.string());
 
+        // Execute the test
         MyClass subject = new MyClass();
 
         boolean actual = subject.something(myString.get());
@@ -46,6 +55,105 @@ public class MyClassTest {
 
 }
 ```
+
+See the [FuzzyRule Options](#user-content-fuzzyrule-options) section
+later in this document for a description of the different configuration
+settings available.
+
+# Generators and Cases
+
+When writing tests with Fuzzy, you use *Cases* to describe test values,
+and *Generators* to declare, retrieve, and use those values.
+
+Each *Case* broadly describes a particular variable. For example, you
+might have an `EmailCase implements Case<String>` that describes email
+addresses. Cases then provide *subcases* (or edge cases) that cover the
+variants of those variables. The `EmailCase` might return subcases for
+typical address (e.g., `name@place.com`), the newer top-level domains
+(e.g., `jon@itza.pizza`), for special formatting (e.g., `me@[1.1.1.1]`),
+and for the more obscure types (e.g., `this."is\ valid"@example.com`).
+
+When you declare a generator for the `EmailCase` in one of your tests,
+Fuzzy will make sure to run the test enough times so that each of the
+subcases is returned at least once. That's four tests (four subcases)
+for the price of one!
+
+Fuzzy will automatically detect all of the generators declared by your
+test and use [*pair-wise combination*](#user-content-pairwise-testing)
+to ensure that each variable's subcases are all executed. The catch is
+that for this to work, you need to declare all variables before you use
+any of them, and they all need to be declared on the thread that is
+executing your tests. _(Note: it's OK to **access** generators from
+another thread, as long as they're all **declared** on the thread
+running the tests.)_
+
+**Good:**
+
+```java
+@Test
+public void myTest() {
+   // Declare test variables
+   Generator<String> to = Generator.of(new EmailCase());
+   Generator<Integer> orderCount = Generator.of(Any.integer().inRange(1, 100));
+
+   // Use your test variables
+   assertTrue(subject.sendEmail(to.get(), orderCount.get()));
+}
+```
+
+**Bad:**
+
+```java
+@Test
+public void myTest() {
+   // Declare and access one generator
+   Generator<String> emailGenerator = Generator.of(new EmailCase());
+   String toAddress = emailGenerator.get();
+
+   // Declare and access another generator; you'll get an IllegalStateException
+   // on the next line
+   Generator<Integer> intGenerator = Generator.of(Any.integer().inRange(1, 100));
+   int orderCount = intGenerator.get();
+}
+```
+
+# Behavioral Specifications
+
+# Pairwise Testing
+
+# Use with Other and Custom Test Frameworks
+
+For other frameworks or test scenarios, you can configure the test
+process manually. Use the `Context` class to initialize and iterate
+over the possible permutations.
+
+```java
+public void executeFuzzyTest() {
+    // Initialize the testing context. This applies to all generators
+    // created on this thread.
+    Context.init();
+
+    try {
+        do {
+            // Execute your test code here.
+            executeSingleTestIteration();
+        } while(Context.next());
+    }
+    catch(AssertionError | Exception e) {
+        // Handle test failures
+        // You can use Context.report() or Context.reportTo(StringBuilder)
+        // to get a sense of the inputs that caused the test failure.
+    }
+    finally {
+        // Clean up for the next test
+        Context.cleanUp();
+    }
+}
+```
+
+# FAQ
+
+# `FuzzyRule` Options
 
 FuzzyRule defines a number of options for controlling the flow of your
 tests:
@@ -127,46 +235,13 @@ with fewer than the maximum iterations.
 
 The default value for `failAfterMaxIterations` is `false`.
 
-# Generators and Cases
-
-# Behavioral Specs with Any
-
-## `Any.string()`
-
-## `Any.*integer()`
-
-# Pairwise Testing
-
-# Executing test iterations manually
-
-For other frameworks or test scenarios, you can configure the test
-process manually. Use the `Context` class to initialize and iterate
-over the possible permutations.
-
-```java
-public void executeFuzzyTest() {
-    // Initialize the testing context. This applies to all generators
-    // created on this thread.
-    Context.init();
-
-    try {
-        do {
-            // Execute your test code here.
-            executeSingleTestIteration();
-        } while(Context.next());
-    }
-    catch(AssertionError | Exception e) {
-        // Handle test failures
-        // You can use Context.report() or Context.reportTo(StringBuilder)
-        // to get a sense of the inputs that caused the test failure.
-    }
-    finally {
-        // Clean up for the next test
-        Context.cleanUp();
-    }
-}
-```
-
-# FAQ
-
 # Contributing
+
+`TODO: flesh this section out`
+
+* Do *not* add any new runtime dependencies to `fuzzy-core`;
+  `fuzzy-junit` should only depend on `junit` itself. In order to make
+  it easy to import fuzzy, we don't want to introduce any dependency
+  conflicts on our consumers. This is the reason for classes such as
+  `FuzzyPreconditions`.
+
