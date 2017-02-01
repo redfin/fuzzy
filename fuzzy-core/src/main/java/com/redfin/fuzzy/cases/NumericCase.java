@@ -334,21 +334,23 @@ public abstract class NumericCase<T extends Number> implements Case<T> {
 			@Override
 			protected void addAdditionalSubcases(Set<Subcase<Long>> subcases) {
 				// If supported by their bounds, make sure to add negative and positive cases for values larger
-				// than regular integers can handle.
-				if(getMin() == null) {
-					subcases.add(r -> (long)Integer.MIN_VALUE - (1L + (r.nextInt() & 0x3FFFFFFFL)));
-				}
-				else if(getMin() < Integer.MIN_VALUE) {
-					final int d = (int)(Integer.MIN_VALUE - getMin()) - 1;
-					subcases.add(r -> (long)Integer.MIN_VALUE - (1L + r.nextInt(d)));
+				// than regular integers can handle. We don't need to do this if the opposite bound already lies outside
+				// the capacity of an integer.
+
+				if(getMax() == null || getMax() > Integer.MIN_VALUE) {
+					if (getMin() == null) {
+						subcases.add(r -> (long) Integer.MIN_VALUE - (1L + (r.nextInt() & 0x3FFFFFFFL)));
+					}
+					// if a minimum bound is set and it's less than Integer.MIN_VALUE, it will already be included as
+					// a case
 				}
 
-				if(getMax() == null) {
-					subcases.add(r -> (long)Integer.MAX_VALUE + 1L + (r.nextInt() & 0x3FFFFFFFL));
-				}
-				else if(getMax() > Integer.MAX_VALUE) {
-					final int d = (int)(getMax() - Integer.MAX_VALUE) - 1;
-					subcases.add(r -> (long)Integer.MAX_VALUE + 1L + r.nextInt(d));
+				if(getMin() == null || getMin() < Integer.MAX_VALUE) {
+					if (getMax() == null) {
+						subcases.add(r -> (long) Integer.MAX_VALUE + 1L + (r.nextInt() & 0x3FFFFFFFL));
+					}
+					// if a maximum bound is set and it's greater than Integer.MAX_VALUE, it will already be included as
+					// a case
 				}
 			}
 		};

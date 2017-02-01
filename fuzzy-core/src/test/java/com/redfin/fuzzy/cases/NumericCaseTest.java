@@ -695,20 +695,30 @@ public class NumericCaseTest {
 	}
 
 	@Test
-	public void testLongAdditionalSubcases() {
+	public void testLongCoversValuesBiggerThanIntegers() {
+		final long BIG = 1L << 60;
+
 		Set<Long> longs;
 
 		longs = Any.longInteger().generateAllOnce(random);
 		assertTrue(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE));
 		assertTrue(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE));
 
-		longs = Any.longInteger().lessThanOrEqualTo(Integer.MAX_VALUE + 10L).generateAllOnce(random);
+		longs = Any.longInteger().lessThanOrEqualTo(BIG).generateAllOnce(random);
 		assertTrue(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE));
-		assertFalse(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE + 10L));
+		assertFalse(longs.stream().anyMatch(l -> l > BIG));
 
-		longs = Any.longInteger().greaterThanOrEqualTo(Integer.MIN_VALUE - 10L).generateAllOnce(random);
+		longs = Any.longInteger().greaterThanOrEqualTo(-BIG).generateAllOnce(random);
 		assertTrue(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE));
-		assertFalse(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE - 10L));
+		assertFalse(longs.stream().anyMatch(l -> l < -BIG));
+
+		longs = Any.longInteger().lessThanOrEqualTo(-BIG).generateAllOnce(random);
+		assertTrue(longs.stream().anyMatch(l -> l < Integer.MIN_VALUE));
+		assertFalse(longs.stream().anyMatch(l -> l > -BIG));
+
+		longs = Any.longInteger().greaterThanOrEqualTo(BIG).generateAllOnce(random);
+		assertTrue(longs.stream().anyMatch(l -> l > Integer.MAX_VALUE));
+		assertFalse(longs.stream().anyMatch(l -> l < BIG));
 	}
 
 	private SubcaseExpectations assertSubcases(Set<Subcase<Integer>> subcases) {
