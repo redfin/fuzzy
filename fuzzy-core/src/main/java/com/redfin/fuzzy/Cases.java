@@ -27,15 +27,15 @@ public class Cases {
 	 * <p>
 	 * For example, consider the following composition:
 	 * </p>
-	 * <pre><code>
-	 *     Case&lt;Integer> composedCase = Cases.compose(
+	 * <pre>{@code
+	 *     Case<Integer> composedCase = Cases.compose(
 	 *         CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,
 	 *         new Case[] { Any.of(2, 3), Any.of(10, 100, 1000) },
 	 *         (random, values) -> (int)values[0] * (int)values[1]
 	 *     );
 	 *
 	 *     composedCase.generateAllOnce().stream().forEach(System.out::println);
-	 * </code></pre>
+	 * }</pre>
 	 * <p>
 	 * This will return a Case of Integers that is the result of multiplying one of the values from the first base case
 	 * ({@code 2} or {@code 3}) with one of the values from the second base case ({@code 10}, {@code 100}, or

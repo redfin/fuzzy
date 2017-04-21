@@ -9,10 +9,11 @@ import com.redfin.fuzzy.junit.FuzzyRule;
 import java.time.LocalDate;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 
 public class ToDoTaskFactoryTest {
 
-	public @Rule FuzzyRule fuzzyRule = FuzzyRule.REPORTING_ALL_FAILURES;
+	public final @Rule TestRule fuzzyRule = FuzzyRule.REPORTING_ALL_FAILURES;
 
 	@Test
 	public void testCreate() {

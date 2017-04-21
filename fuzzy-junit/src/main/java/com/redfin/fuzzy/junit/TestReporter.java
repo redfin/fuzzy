@@ -73,7 +73,21 @@ public interface TestReporter {
 	};
 
 	TestReporter VERBOSE = new BaseTestReporter() {
+		@Override
+		public void preTest(Description description) {
+			System.out.println("Beginning test " + description.toString() + ".");
+		}
 
+		@Override
+		public void postIteration(Description description, int index, boolean success) {
+			System.out.println(Context.report());
+			System.out.println("  Iteration " + index + " completed with status " + (success ? "success" : "failure") + ".");
+		}
+
+		@Override
+		public void postTest(Description description, int iterations, boolean success) {
+			System.out.println("Test " + description.toString() + " completed after " + iterations + " iteration(s).");
+		}
 	};
 
 }

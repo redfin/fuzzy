@@ -100,8 +100,12 @@ public class FuzzyRuleTest {
 	}
 
 	@Test
-	public void testTooManyIterations() throws Throwable {
-		FuzzyRule subject = FuzzyRule.custom().withMaxIterations(2).build();
+	public void testTooManyIterationsNotFailing() throws Throwable {
+		FuzzyRule subject = FuzzyRule.custom()
+			.withMaxIterations(2)
+			.withFailAfterMaxIterations(false)
+			.build();
+
 		int[] i = new int[] { 0 };
 
 		Statement s = subject.apply(
@@ -122,10 +126,9 @@ public class FuzzyRuleTest {
 	}
 
 	@Test
-	public void testTooManyIterationsFailing() throws Throwable {
+	public void testTooManyIterations() throws Throwable {
 		FuzzyRule subject = FuzzyRule.custom()
 			.withMaxIterations(2)
-			.withFailAfterMaxIterations(true)
 			.build();
 
 		int[] i = new int[] { 0 };
@@ -207,6 +210,32 @@ public class FuzzyRuleTest {
 			// expected
 			assertEquals(1, count[0]);
 		}
+	}
+
+	@Test
+	public void testEachSubcaseAtLeastOnce() throws Throwable {
+		FuzzyRule subject = FuzzyRule.EACH_SUBCASE_AT_LEAST_ONCE;
+
+		int[] count = new int[] { 0 };
+
+		Statement s = subject.apply(
+			new Statement() {
+				@Override
+				public void evaluate() throws Throwable {
+					Generator<Integer> a = Generator.of(1, 2, 3, 4);
+					Generator<Integer> b = Generator.of(5, 6);
+
+					a.get();
+
+					count[0]++;
+				}
+			},
+			Description.EMPTY
+		);
+
+		s.evaluate();
+
+		assertEquals(4, count[0]);
 	}
 
 }

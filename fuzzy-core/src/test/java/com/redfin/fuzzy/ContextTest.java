@@ -1,7 +1,11 @@
 package com.redfin.fuzzy;
 
-import org.junit.After;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,13 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
+import org.junit.After;
+import org.junit.Test;
 
 public class ContextTest {
 
@@ -27,9 +26,9 @@ public class ContextTest {
 
 	@Test
 	public void testInitReinitialized() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		try {
-			Context.init(0);
+			Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 			fail();
 		}
 		catch(IllegalStateException e) {
@@ -44,7 +43,7 @@ public class ContextTest {
 
 	@Test
 	public void testGetUnlockedLocked() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		Context.getUnlocked().lock();
 
 		try {
@@ -58,23 +57,23 @@ public class ContextTest {
 
 	@Test
 	public void testInitGetUnlocked() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		assertNotNull(Context.getUnlocked());
 	}
 
 	@Test
 	public void testCleanUp() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		assertNotNull(Context.getUnlocked());
 		Context.cleanUp();
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		assertNotNull(Context.getUnlocked());
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testRegisterLocked() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		Context c = Context.getUnlocked();
 
 		c.lock();
@@ -91,7 +90,7 @@ public class ContextTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testRegisterDuplicate() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		Context c = Context.getUnlocked();
 
 		Generator g = new Generator(c);
@@ -108,7 +107,7 @@ public class ContextTest {
 
 	@Test
 	public void testBasicIntegration() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		Set<String> actuals = new HashSet<>();
 		do {
@@ -121,7 +120,7 @@ public class ContextTest {
 
 	@Test
 	public void testMultiVariableIntegration() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		Set<String> actuals = new HashSet<>();
 		do {
@@ -144,13 +143,13 @@ public class ContextTest {
 
 	@Test
 	public void testNextWithNoGenerators() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		assertFalse(Context.next());
 	}
 
 	@Test
 	public void testReport() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		Generator<String> variableA = Generator.named("variableA").of(Literal.value("Hello, "));
 		Generator<String> variableB = Generator.named("variableB").of(Literal.value("World!"));
@@ -168,7 +167,7 @@ public class ContextTest {
 
 	@Test
 	public void testReportWithCustomDescription() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		Generator<String> variableA = Generator.named("variableA").of(() -> FuzzyUtil.setOf(
 			new Subcase<String>() {
@@ -198,13 +197,13 @@ public class ContextTest {
 
 	@Test
 	public void testReportUnlocked() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 		assertEquals("", Context.report());
 	}
 
 	@Test
 	public void testReportFullyIterated() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		Generator.of(Literal.value("A")).get();
 		Context.next();
@@ -214,7 +213,7 @@ public class ContextTest {
 
 	@Test
 	public void testRandomDeterminism() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<Integer> firstValues = new ArrayList<>();
 		do {
@@ -226,7 +225,7 @@ public class ContextTest {
 		assertEquals(3, firstValues.size());
 
 		Context.cleanUp();
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<Integer> secondValues = new ArrayList<>();
 		do {
@@ -240,7 +239,7 @@ public class ContextTest {
 
 	@Test
 	public void testRandomDeterminismWithNewSeed() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<Integer> firstValues = new ArrayList<>();
 		do {
@@ -252,7 +251,7 @@ public class ContextTest {
 		assertEquals(3, firstValues.size());
 
 		Context.cleanUp();
-		Context.init(1); // different seed this time
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,1); // different seed this time
 
 		List<Integer> secondValues = new ArrayList<>();
 		do {
@@ -267,7 +266,7 @@ public class ContextTest {
 
 	@Test
 	public void testValuesForCurrentIteration() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		Generator<String> string = Generator.of("Hello");
 		Generator<Integer> integer = Generator.of(5);
@@ -294,6 +293,35 @@ public class ContextTest {
 		catch(IllegalStateException e) {
 			// expected
 		}
+	}
+
+	@Test
+	public void testEachSubcaseAtLeastOnce() {
+		Context.init(CaseCompositionMode.EACH_SUBCASE_AT_LEAST_ONCE, 0);
+
+		Set<String> iterations = new HashSet<>();
+		int iterationCount = 0;
+		do {
+			Generator<String> genA = Generator.of("A-1", "A-2");
+			Generator<String> genB = Generator.of("B-1", "B-2", "B-3", "B-4");
+			Generator<String> genC = Generator.of("C-1");
+
+			iterations.add(genA.get() + " " + genB.get() + " " + genC.get());
+
+			iterationCount++;
+		}
+		while(Context.next());
+
+		Set<String> expected = new HashSet<>();
+		expected.add("A-1 B-1 C-1");
+		expected.add("A-2 B-2 C-1");
+		expected.add("A-1 B-3 C-1");
+		expected.add("A-2 B-4 C-1");
+
+		assertEquals(4, iterationCount);
+		assertEquals(expected, iterations);
+
+		Context.cleanUp();
 	}
 
 }

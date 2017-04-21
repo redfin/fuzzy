@@ -10,17 +10,19 @@ import java.util.List;
  * with each <a href="https://en.wikipedia.org/wiki/Equivalence_partitioning"><em>equivalency class</em></a> supported
  * by your generators.
  *
- * <p><pre>{@code @Test
+ * <pre><code>
+ * &#064;Test
  * public void myTest() {
  *     // Declare all generators at the beginning of your test, before you call .get() on any of them.
- *     Generator&lt;String> inputString = Generator.of(Any.string());
- *     Generator&lt;Integer> inputInt = Generator.of(Any.integer());
+ *     Generator&lt;String&gt; inputString = Generator.of(Any.string());
+ *     Generator&lt;Integer&gt; inputInt = Generator.of(Any.integer());
  *
  *     String actual = subject.someMethod(inputString.get(), inputInt.get());
  *
  *     // Each subsequent call to .get() will return the same value, so you can use them multiple times in your test.
  *     assertEquals(inputString.get() + " " + inputInt.get(), actual);
- * }}</pre></p>
+ * }
+ * </code></pre>
  * <p>Once you have declared the generators used by your test, you can obtain specific test values by calling the
  * {@link #get()} method. For a given iteration, each subsequent call to {@code get} will return exactly the same value,
  * so it is not necessary to store the result in a separate variable. For example:

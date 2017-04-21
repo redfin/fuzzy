@@ -17,7 +17,7 @@ public class GeneratorTest {
 
 	@Before
 	public void before() {
-		Context.init(12345); // keep tests consistent
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,12345); // keep tests consistent
 	}
 
 	@After

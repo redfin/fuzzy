@@ -11,6 +11,7 @@ import static org.junit.Assert.fail;
 
 import com.redfin.fuzzy.Any;
 import com.redfin.fuzzy.Case;
+import com.redfin.fuzzy.CaseCompositionMode;
 import com.redfin.fuzzy.Context;
 import com.redfin.fuzzy.Generator;
 import com.redfin.fuzzy.Subcase;
@@ -369,7 +370,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testGreaterThanGenerator() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES, 0);
 
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
@@ -398,7 +399,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testLessThanGenerator() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
@@ -427,7 +428,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testWithinRangeOfGenerator() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
@@ -473,7 +474,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testWithinOneOfGenerator() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
@@ -505,7 +506,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testWithinRangeButExcludingValueOfGenerator() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<List<Integer>> actual = new ArrayList<>();
 		do {
@@ -548,7 +549,7 @@ public class NumericCaseTest {
 
 	@Test
 	public void testWithinOneButExcludingValueOfGenerator() {
-		Context.init(0);
+		Context.init(CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,0);
 
 		List<List<Integer>> actual = new ArrayList<>();
 		do {

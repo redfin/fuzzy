@@ -2,6 +2,7 @@ package com.redfin.fuzzy.pairwise;
 
 import com.redfin.fuzzy.FuzzyPreconditions;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-public class Pairwise<S extends Set> {
+public class Pairwise<S extends Collection> {
 
 	private final List<Param> params;
 
@@ -18,7 +19,7 @@ public class Pairwise<S extends Set> {
 
 		List<Param> params = new ArrayList<>();
 		int i = 0;
-		for(Set<?> parameter : parameters) {
+		for(Collection<?> parameter : parameters) {
 			FuzzyPreconditions.checkNotNullAndContainsNoNulls(parameter);
 			params.add(new Param(i++, new ArrayList<>(parameter)));
 		}

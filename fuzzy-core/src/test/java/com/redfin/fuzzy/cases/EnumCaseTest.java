@@ -1,6 +1,7 @@
 package com.redfin.fuzzy.cases;
 
 import com.redfin.fuzzy.Any;
+import com.redfin.fuzzy.CaseCompositionMode;
 import com.redfin.fuzzy.Context;
 import com.redfin.fuzzy.Generator;
 import com.redfin.fuzzy.FuzzyUtil;
@@ -18,7 +19,11 @@ public class EnumCaseTest {
 		Set<TestEnum> actual = new HashSet<>();
 		int count = 0;
 
-		Context.init(getClass().getName().hashCode());
+		Context.init(
+			CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,
+			getClass().getName().hashCode()
+		);
+
 		do {
 			Generator<TestEnum> enumValue = Generator.of(Any.enumValueFrom(TestEnum.class));
 
@@ -37,7 +42,11 @@ public class EnumCaseTest {
 		Set<TestEnum> actual = new HashSet<>();
 		int count = 0;
 
-		Context.init(getClass().getName().hashCode());
+		Context.init(
+			CaseCompositionMode.PAIRWISE_PERMUTATIONS_OF_SUBCASES,
+			getClass().getName().hashCode()
+		);
+
 		do {
 			Generator<TestEnum> enumValue = Generator.of(Any
 				.enumValueFrom(TestEnum.class)

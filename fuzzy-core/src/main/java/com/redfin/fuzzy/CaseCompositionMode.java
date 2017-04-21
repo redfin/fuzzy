@@ -10,8 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Describes the different algorithms the fuzzy library can use to permute subcases when using one of the
- * {@linkplain Cases#compose Case composition} functions.
+ * Describes the different algorithms the fuzzy library can use to permute subcases when running tests or using one of
+ * the {@linkplain Cases#compose case composition functions}.
  */
 public enum CaseCompositionMode {
 	/**
@@ -32,6 +32,7 @@ public enum CaseCompositionMode {
 	 * the following:
 	 * </p>
 	 * <table>
+	 *     <caption>Output for the cases in this example</caption>
 	 *     <thead>
 	 *         <tr><th></th><th>case {@code a}</th><th>case {@code b}</th><th>case {@code c}</th></tr>
 	 *     </thead>
@@ -95,6 +96,7 @@ public enum CaseCompositionMode {
 	 * Given this input, the pairwise algorithm might generate the following composed subcases:
 	 * </p>
 	 * <table>
+	 *     <caption>Output for the cases in this example</caption>
 	 *     <thead>
 	 *         <tr><th></th><th>case {@code a}</th><th>case {@code b}</th><th>case {@code c}</th></tr>
 	 *     </thead>
@@ -146,5 +148,5 @@ public enum CaseCompositionMode {
 
 	private CaseCompositionMode(Algorithm algorithm) { this.algorithm = algorithm; }
 
-	interface Algorithm { Subcase[][] apply(Case[] baseCases); }
+	/* package */ interface Algorithm { Subcase[][] apply(Case[] baseCases); }
 }
