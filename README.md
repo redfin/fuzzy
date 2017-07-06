@@ -1,6 +1,8 @@
 Fuzzy is a handy little library for writing expressive
 ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) in Java.
 
+[![Build Status](https://travis-ci.org/redfin/fuzzy.svg?branch=master)](https://travis-ci.org/redfin/fuzzy)
+
 ```java
 public void test() {
     // Create an input that can be one of three different strings
