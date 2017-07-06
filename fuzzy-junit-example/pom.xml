@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>fuzzy</artifactId>
-		<groupId>com.redfin.fuzzy</groupId>
+		<groupId>com.redfin</groupId>
 		<version>0.6</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -14,13 +14,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.redfin.fuzzy</groupId>
+			<groupId>com.redfin</groupId>
 			<artifactId>fuzzy-core</artifactId>
 			<version>0.6</version>
 		</dependency>
 		<dependency>
-			<groupId>com.redfin.fuzzy</groupId>
-			<artifactId>fuzzy-junit</artifactId>
+			<groupId>com.redfin</groupId>
+			<artifactId>fuzzy-junit-4</artifactId>
 			<version>0.6</version>
 		</dependency>
 	</dependencies>

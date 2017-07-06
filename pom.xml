@@ -4,14 +4,55 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.redfin.fuzzy</groupId>
+	<groupId>com.redfin</groupId>
 	<artifactId>fuzzy</artifactId>
 	<packaging>pom</packaging>
 	<version>0.6</version>
 	<modules>
 		<module>fuzzy-core</module>
-		<module>fuzzy-junit</module>
+		<module>fuzzy-junit-4</module>
 		<module>fuzzy-junit-example</module>
 	</modules>
+
+	<name>Fuzzy</name>
+	<description>A tool that generates randomized but deterministic values for use in test suites.</description>
+
+	<url>https://github.com/redfin/fuzzy</url>
+	<scm>
+		<connection>scm:git:git@github.com:redfin/fuzzy.git</connection>
+		<url>https://github.com/redfin/fuzzy</url>
+	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/redfin/fuzzy/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.org/redfin/fuzzy</url>
+	</ciManagement>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Redfin</name>
+		<url>https://www.redfin.com</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>mark.biddlecom</id>
+			<name>Mark Biddlecom</name>
+			<email>mark.biddlecom@redfin.com</email>
+			<url>https://github.com/markbiddlecom</url>
+			<organization>Redfin</organization>
+			<organizationUrl>https://www.redfin.com</organizationUrl>
+		</developer>
+	</developers>
 
 </project>
