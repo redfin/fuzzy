@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -299,27 +300,26 @@ public class ContextTest {
 	public void testEachSubcaseAtLeastOnce() {
 		Context.init(CaseCompositionMode.EACH_SUBCASE_AT_LEAST_ONCE, 0);
 
-		Set<String> iterations = new HashSet<>();
+		Set<String> seenSubcases = new HashSet<>();
 		int iterationCount = 0;
 		do {
 			Generator<String> genA = Generator.of("A-1", "A-2");
 			Generator<String> genB = Generator.of("B-1", "B-2", "B-3", "B-4");
 			Generator<String> genC = Generator.of("C-1");
 
-			iterations.add(genA.get() + " " + genB.get() + " " + genC.get());
+			seenSubcases.add(genA.get());
+			seenSubcases.add(genB.get());
+			seenSubcases.add(genC.get());
 
 			iterationCount++;
 		}
 		while(Context.next());
 
 		Set<String> expected = new HashSet<>();
-		expected.add("A-1 B-1 C-1");
-		expected.add("A-2 B-2 C-1");
-		expected.add("A-1 B-3 C-1");
-		expected.add("A-2 B-4 C-1");
+		expected.addAll(Arrays.asList("A-1", "A-2", "B-1", "B-2", "B-3", "B-4", "C-1"));
 
 		assertEquals(4, iterationCount);
-		assertEquals(expected, iterations);
+		assertEquals(expected, seenSubcases);
 
 		Context.cleanUp();
 	}
