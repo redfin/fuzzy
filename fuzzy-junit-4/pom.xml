@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>fuzzy</artifactId>
 		<groupId>com.redfin</groupId>
-		<version>0.6</version>
+		<version>0.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>com.redfin</groupId>
 			<artifactId>fuzzy-core</artifactId>
-			<version>0.6</version>
+			<version>0.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

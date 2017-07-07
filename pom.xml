@@ -7,7 +7,7 @@
 	<groupId>com.redfin</groupId>
 	<artifactId>fuzzy</artifactId>
 	<packaging>pom</packaging>
-	<version>0.6</version>
+	<version>0.7-SNAPSHOT</version>
 	<modules>
 		<module>fuzzy-core</module>
 		<module>fuzzy-junit-4</module>
