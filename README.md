@@ -2,6 +2,9 @@ Fuzzy is a handy little library for writing expressive
 ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) in Java.
 
 [![Build Status](https://travis-ci.org/redfin/fuzzy.svg?branch=master)](https://travis-ci.org/redfin/fuzzy)
+[![Coverage Status](https://coveralls.io/repos/github/redfin/fuzzy/badge.svg)](https://coveralls.io/github/redfin/fuzzy)
+[![fuzzy-core Javadoc](http://javadoc-badge.appspot.com/com.redfin/fuzzy-core.svg?label=fuzzy-core+javadoc)](http://javadoc-badge.appspot.com/com.redfin/fuzzy-core)
+[![fuzzy-core Javadoc](http://javadoc-badge.appspot.com/com.redfin/fuzzy-junit-4.svg?label=fuzzy-junit-4+javadoc)](http://javadoc-badge.appspot.com/com.redfin/fuzzy-junit-4)
 
 ```java
 public void test() {
@@ -23,14 +26,43 @@ code is tested against common input edge cases. For example, a generator
 of `Any.integer()` will inject your inputs with negative values,
 positive values, and zero.
 
+* [Installation](#user-content-installation)
 * [Use with JUnit](#user-content-use-with-junit)
 * [Generators and Cases](#user-content-generators-and-cases)
 * [Behavioral Specifications](#user-content-behavioral-specifications)
-* [Pairwise Testing](#user-content-pairwise-testing)
+* [Permutation Modes](#user-content-permutation-modes)
 * [Use with Other and Custom Test Frameworks](#user-content-use-with-other-and-custom-test-frameworks)
 * [FAQ](#user-content-faq)
 * [`FuzzyRule` Options](#user-content-fuzzyrule-options)
 * [Contributing](#user-content-contributing)
+
+# Installation
+
+At a minimum, you will need to take a dependency on the
+[`fuzzy-core`](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.redfin%22%20a%3A%22fuzzy-core%22)
+library:
+
+```xml
+<!-- Maven -->
+<dependency>
+    <groupId>com.redfin</groupId>
+    <artifactId>fuzzy-core</artifactId>
+    <version>0.7-SNAPSHOT</version>
+</dependency>
+```
+
+In addition, if you're using a supported unit testing framework 
+(currently only Junit 4), you can take a dependency on the library
+for that framework:
+
+```xml
+<!-- Maven Junit 4 -->
+<dependency>
+    <groupId>com.redfin</groupId>
+    <artifactId>fuzzy-junit-4</artifactId>
+    <version>0.7-SNAPSHOT</version>
+</dependency>
+```
 
 # Use with JUnit
 
@@ -94,6 +126,9 @@ running the tests.)_
 ```java
 @Test
 public void myTest() {
+   // All of your generators must be declared before any of them are used, so
+   // that fuzzy understands the number of necessary test permutations.
+
    // Declare test variables
    Generator<String> to = Generator.of(new EmailCase());
    Generator<Integer> orderCount = Generator.of(Any.integer().inRange(1, 100));
@@ -108,6 +143,9 @@ public void myTest() {
 ```java
 @Test
 public void myTest() {
+   // All of your generators must be declared before any of them are used, so
+   // that fuzzy understands the number of necessary test permutations.
+
    // Declare and access one generator
    Generator<String> emailGenerator = Generator.of(new EmailCase());
    String toAddress = emailGenerator.get();
@@ -121,7 +159,11 @@ public void myTest() {
 
 # Behavioral Specifications
 
-# Pairwise Testing
+# Permuation Modes
+
+## Pairwise
+
+## Each Subcase At Least Once
 
 # Use with Other and Custom Test Frameworks
 
