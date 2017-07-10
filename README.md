@@ -2,6 +2,7 @@ Fuzzy is a handy little library for writing expressive
 ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) in Java.
 
 [![Build Status](https://travis-ci.org/redfin/fuzzy.svg?branch=master)](https://travis-ci.org/redfin/fuzzy)
+[![Coverage Status](https://coveralls.io/repos/github/redfin/fuzzy/badge.svg)](https://coveralls.io/github/redfin/fuzzy)
 [![fuzzy-core Javadoc](http://javadoc-badge.appspot.com/com.redfin/fuzzy-core.svg?label=fuzzy-core+javadoc)](http://javadoc-badge.appspot.com/com.redfin/fuzzy-core)
 [![fuzzy-core Javadoc](http://javadoc-badge.appspot.com/com.redfin/fuzzy-junit-4.svg?label=fuzzy-junit-4+javadoc)](http://javadoc-badge.appspot.com/com.redfin/fuzzy-junit-4)
 
