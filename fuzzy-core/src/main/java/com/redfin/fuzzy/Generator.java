@@ -54,6 +54,10 @@ public class Generator<T> implements Comparable<Generator<T>> {
 		return context.currentValue(this);
 	}
 
+	/*package*/ final Subcase<T> getCurrentSubcase() {
+		return context.currentSubcase(this);
+	}
+
 	public static GeneratorBuilder named(String name) {
 		return new GeneratorBuilder(FuzzyPreconditions.checkNotNull(name));
 	}

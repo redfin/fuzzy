@@ -208,6 +208,18 @@ public class Context {
 		return value;
 	}
 
+	/*package*/ <T> Subcase<T> currentSubcase(Generator<T> generator) {
+		lock();
+
+		Iteration i = iterations.peek().get(generator);
+		if(i == null)
+			throw newUnregisteredGeneratorException(generator);
+
+		@SuppressWarnings("unchecked")
+		Subcase<T> value = (Subcase<T>)i.subcase;
+		return value;
+	}
+
 	/*package*/ void lock() {
 		if(!locked) {
 			locked = true;

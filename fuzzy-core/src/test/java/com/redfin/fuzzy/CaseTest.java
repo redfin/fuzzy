@@ -61,4 +61,10 @@ public class CaseTest {
 		subject.generateAllOnce();
 	}
 
+	@Test
+	public void testMap() {
+		Case<Integer> subject = Any.of(1, 2, 3).map(i -> i * 2);
+		assertEquals(FuzzyUtil.setOf(2, 4, 6), subject.generateAllOnce());
+	}
+
 }
