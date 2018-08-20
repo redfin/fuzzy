@@ -48,6 +48,7 @@ library:
     <groupId>com.redfin</groupId>
     <artifactId>fuzzy-core</artifactId>
     <version>0.6.1</version>
+    <scope>test</scope>
 </dependency>
 ```
 
@@ -61,6 +62,7 @@ for that framework:
     <groupId>com.redfin</groupId>
     <artifactId>fuzzy-junit-4</artifactId>
     <version>0.6.1</version>
+    <scope>test</scope>
 </dependency>
 ```
 
